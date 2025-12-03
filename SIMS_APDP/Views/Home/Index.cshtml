@@ -1,10 +1,30 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Trang chủ";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-    <p><a href="@Url.Action("Index", "Login")">Login</a></p>
-    <p><a href="@Url.Action("Index", "Register")">Register</a></p>
+<div class="hero min-h-screen bg-base-200">
+    <div class="hero-content text-center">
+        <div class="max-w-md">
+            <h1 class="text-5xl font-bold text-primary">Chào mừng đến SIMS APDP</h1>
+            <p class="py-6 text-lg">Hệ thống quản lý thông tin sinh viên, điểm danh, thời khóa biểu và phản hồi hiện đại nhất!</p>
+
+            @if (!User.Identity.IsAuthenticated)
+            {
+                <div class="space-x-4">
+                    <a href="/Register" class="btn btn-primary btn-lg">Đăng ký ngay</a>
+                    <a href="/Login" class="btn btn-outline btn-lg">Đăng nhập</a>
+                </div>
+            }
+            else
+            {
+                <div class="stats shadow">
+                    <div class="stat">
+                        <div class="stat-title">Xin chào</div>
+                        <div class="stat-value text-primary">@User.Identity.Name</div>
+                        <div class="stat-desc">Chúc một ngày tốt lành!</div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
 </div>
