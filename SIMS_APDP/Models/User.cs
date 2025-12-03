@@ -7,24 +7,37 @@ namespace SIMS_APDP.Models
     {
         [Key]
         public int UserId { get; set; }
+
         [Required]
         public string Username { get; set; }
+
         [Required, EmailAddress]
         public string Email { get; set; }
+
         [Required]
         public string Password { get; set; }
+
         [Required]
         public string FullName { get; set; }
+
         [Required]
         public string Address { get; set; }
-        [Required]
+
         public string? Gender { get; set; }
-        [Required, Phone]
+
+        [Phone]
         public string? PhoneNumber { get; set; }
+
         [Required]
         public DateTime DateOfBirth { get; set; } = DateTime.UtcNow;
+
+        // Explicit FK to Role
         public int RoleId { get; set; }
+
         [ForeignKey("RoleId")]
         public Role Role { get; set; }
+
+        // Optional navigation collections
+        public ICollection<StudentCourse> StudentCourses { get; set; } = new List<StudentCourse>();
     }
 }

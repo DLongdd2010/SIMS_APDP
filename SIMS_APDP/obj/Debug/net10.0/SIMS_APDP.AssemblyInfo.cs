@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SIMS_APDP")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a102e283194d2a0b669e5aab27ebe26efc41b8f6")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4c0dd0563d10d6b1d764b2429710dd2d6e16f9a9")]
 [assembly: System.Reflection.AssemblyProductAttribute("SIMS_APDP")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SIMS_APDP")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
