@@ -15,9 +15,11 @@ namespace SIMS_APDP.Models
         public TimeOnly EndTime { get; set; }
         [Required]
         public string Semester { get; set; }
+        public int CourseId { get; set; }
+        public int? RoomId { get; set; }
         [ForeignKey("CourseId")]
         public Course Course { get; set; }
         [ForeignKey("RoomId")]
-        public Room Room { get; set; }
+        public Room? Room { get; set; }
     }
 }

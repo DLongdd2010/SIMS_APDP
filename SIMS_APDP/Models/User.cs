@@ -23,6 +23,7 @@ namespace SIMS_APDP.Models
         public string? PhoneNumber { get; set; }
         [Required]
         public DateTime DateOfBirth { get; set; } = DateTime.UtcNow;
+        public int RoleId { get; set; }
         [ForeignKey("RoleId")]
         public Role Role { get; set; }
     }
