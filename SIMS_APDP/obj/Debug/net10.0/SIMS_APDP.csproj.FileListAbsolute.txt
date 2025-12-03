@@ -139,3 +139,4 @@ C:\Users\PC\source\repos\SIMS_APDP\SIMS_APDP\obj\Debug\net10.0\refint\SIMS_APDP.
 C:\Users\PC\source\repos\SIMS_APDP\SIMS_APDP\obj\Debug\net10.0\SIMS_APDP.pdb
 C:\Users\PC\source\repos\SIMS_APDP\SIMS_APDP\obj\Debug\net10.0\SIMS_APDP.genruntimeconfig.cache
 C:\Users\PC\source\repos\SIMS_APDP\SIMS_APDP\obj\Debug\net10.0\ref\SIMS_APDP.dll
+C:\Users\PC\source\repos\SIMS_APDP\SIMS_APDP\obj\Debug\net10.0\SIMS_APDP.sourcelink.json
