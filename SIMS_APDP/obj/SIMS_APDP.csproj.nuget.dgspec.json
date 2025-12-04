@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\admin\\Desktop\\SIMS_APDP\\SIMS_APDP\\SIMS_APDP.csproj": {}
+    "C:\\Users\\PC\\source\\repos\\SIMS_APDP\\SIMS_APDP\\SIMS_APDP.csproj": {}
   },
   "projects": {
-    "C:\\Users\\admin\\Desktop\\SIMS_APDP\\SIMS_APDP\\SIMS_APDP.csproj": {
+    "C:\\Users\\PC\\source\\repos\\SIMS_APDP\\SIMS_APDP\\SIMS_APDP.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\admin\\Desktop\\SIMS_APDP\\SIMS_APDP\\SIMS_APDP.csproj",
+        "projectUniqueName": "C:\\Users\\PC\\source\\repos\\SIMS_APDP\\SIMS_APDP\\SIMS_APDP.csproj",
         "projectName": "SIMS_APDP",
-        "projectPath": "C:\\Users\\admin\\Desktop\\SIMS_APDP\\SIMS_APDP\\SIMS_APDP.csproj",
-        "packagesPath": "C:\\Users\\admin\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\admin\\Desktop\\SIMS_APDP\\SIMS_APDP\\obj\\",
+        "projectPath": "C:\\Users\\PC\\source\\repos\\SIMS_APDP\\SIMS_APDP\\SIMS_APDP.csproj",
+        "packagesPath": "C:\\Users\\PC\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\PC\\source\\repos\\SIMS_APDP\\SIMS_APDP\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\PC\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -26,7 +26,6 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {

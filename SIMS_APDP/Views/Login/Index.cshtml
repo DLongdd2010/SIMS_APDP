@@ -30,13 +30,13 @@
                         </div>
                     }
 
-                    <form asp-action="Login" asp-controller="Account" method="post">
+                    <form asp-action="Login" asp-controller="Login" method="post">
                         <div class="row g-3 justify-content-center">
 
                             <div class="col-12 col-md-8">
                                 <div data-mdb-input-init class="form-outline">
-                                    <input type="text" name="UsernameOrEmail" class="form-control form-control-lg" required autofocus />
-                                    <label class="form-label">Tên đăng nhập hoặc Email</label>
+                                    <input type="email" name="Email" class="form-control form-control-lg" required autofocus />
+                                    <label class="form-label">Email</label>
                                 </div>
                             </div>
 
