@@ -1,101 +1,127 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    ViewData["Title"] = "Đăng ký tài khoản";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<section class="vh-100" style="background-color: #eee;">
-    <div class="container h-100">
-        <div class="row d-flex justify-content-center align-items-center h-100">
-            <div class="col-lg-12 col-xl-11">
-                <div class="card text-black" style="border-radius: 25px;">
-                    <div class="card-body p-md-5">
-                        <div class="row justify-content-center">
-                            <div class="col-md-10 col-lg-6 col-xl-5 order-2 order-lg-1">
 
-                                <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">Sign up</p>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-10 col-lg-8 col-xl-7">
+            <div class="card border-0 shadow-lg" style="border-radius: 25px; backdrop-filter: blur(16px); background: rgba(255,255,255,0.20); border: 1px solid rgba(255,255,255,0.3);">
+                <div class="card-body p-5 text-center">
+                    <h1 class="text-white fw-bold mb-4" style="font-size: 3.5rem; text-shadow: 0 5px 15px rgba(0,0,0,0.4);">SIMS</h1>
+                    <p class="text-white fs-5 mb-5 opacity-90">Tạo tài khoản để bắt đầu hành trình học tập</p>
 
-                                <form class="mx-1 mx-md-4">
-
-                                    <div class="d-flex flex-row align-items-center mb-4">
-                                        <i class="fas fa-user fa-lg me-3 fa-fw"></i>
-                                        <div data-mdb-input-init class="form-outline flex-fill mb-0">
-                                            <input type="text" id="form3Example1c" class="form-control" />
-                                            <label class="form-label" for="form3Example1c">Your Name</label>
-                                        </div>
-                                    </div>
-
-                                    <div class="d-md-flex justify-content-start align-items-center mb-4 py-2">
-
-                                        <h6 class="mb-0 me-4">Gender: </h6>
-
-                                        <div class="form-check form-check-inline mb-0 me-4">
-                                            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="femaleGender"
-                                                   value="option1" />
-                                            <label class="form-check-label" for="femaleGender">Female</label>
-                                        </div>
-
-                                        <div class="form-check form-check-inline mb-0 me-4">
-                                            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="maleGender"
-                                                   value="option2" />
-                                            <label class="form-check-label" for="maleGender">Male</label>
-                                        </div>
-
-                                        <div class="form-check form-check-inline mb-0">
-                                            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="otherGender"
-                                                   value="option3" />
-                                            <label class="form-check-label" for="otherGender">Other</label>
-                                        </div>
-
-                                    </div>
-
-                                    <div class="d-flex flex-row align-items-center mb-4">
-                                        <i class="fas fa-envelope fa-lg me-3 fa-fw"></i>
-                                        <div data-mdb-input-init class="form-outline flex-fill mb-0">
-                                            <input type="email" id="form3Example3c" class="form-control" />
-                                            <label class="form-label" for="form3Example3c">Your Email</label>
-                                        </div>
-                                    </div>
-
-                                    <div class="d-flex flex-row align-items-center mb-4">
-                                        <i class="fas fa-lock fa-lg me-3 fa-fw"></i>
-                                        <div data-mdb-input-init class="form-outline flex-fill mb-0">
-                                            <input type="password" id="form3Example4c" class="form-control" />
-                                            <label class="form-label" for="form3Example4c">Password</label>
-                                        </div>
-                                    </div>
-
-                                    <div class="d-flex flex-row align-items-center mb-4">
-                                        <i class="fas fa-key fa-lg me-3 fa-fw"></i>
-                                        <div data-mdb-input-init class="form-outline flex-fill mb-0">
-                                            <input type="password" id="form3Example4cd" class="form-control" />
-                                            <label class="form-label" for="form3Example4cd">Repeat your password</label>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-check d-flex justify-content-center mb-5">
-                                        <input class="form-check-input me-2" type="checkbox" value="" id="form2Example3c" />
-                                        <label class="form-check-label" for="form2Example3">
-                                            I agree all statements in <a href="#!">Terms of service</a>
-                                        </label>
-                                    </div>
-
-                                    <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
-                                        <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-lg">Register</button>
-                                    </div>
-
-                                </form>
-
+                    <form asp-action="Register" asp-controller="Account" method="post">
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div data-mdb-input-init class="form-outline">
+                                    <input type="text" name="Username" class="form-control form-control-lg bg-transparent text-white border-0 border-bottom border-white" required />
+                                    <label class="form-label text-white">Tên đăng nhập</label>
+                                </div>
                             </div>
-                            <div class="col-md-10 col-lg-6 col-xl-7 d-flex align-items-center order-1 order-lg-2">
+                            <div class="col-md-6">
+                                <div data-mdb-input-init class="form-outline">
+                                    <input type="text" name="FullName" class="form-control form-control-lg bg-transparent text-white border-0 border-bottom border-white" required />
+                                    <label class="form-label text-white">Họ và tên</label>
+                                </div>
+                            </div>
 
-                                <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-registration/draw1.webp"
-                                     class="img-fluid" alt="Sample image">
+                            <div class="col-12">
+                                <div data-mdb-input-init class="form-outline">
+                                    <input type="email" name="Email" class="form-control form-control-lg bg-transparent text-white border-0 border-bottom border-white" required />
+                                    <label class="form-label text-white">Email</label>
+                                </div>
+                            </div>
 
+                            <div class="col-12">
+                                <div data-mdb-input-init class="form-outline">
+                                    <input type="text" name="Address" class="form-control form-control-lg bg-transparent text-white border-0 border-bottom border-white" required />
+                                    <label class="form-label text-white">Địa chỉ</label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div data-mdb-input-init class="form-outline">
+                                    <input type="tel" name="PhoneNumber" class="form-control form-control-lg bg-transparent text-white border-0 border-bottom border-white" />
+                                    <label class="form-label text-white">Số điện thoại</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div data-mdb-input-init class="form-outline">
+                                    <input type="date" name="DateOfBirth" class="form-control form-control-lg bg-transparent text-white border-0 border-bottom border-white" required />
+                                    <label class="form-label text-white">Ngày sinh</label>
+                                </div>
+                            </div>
+
+                            <div class="col-12 text-start">
+                                <label class="text-white fw-bold mb-3">Giới tính</label>
+                                <div class="d-flex justify-content-center gap-5">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="Gender" value="Male" id="male" checked />
+                                        <label class="form-check-label text-white" for="male">Nam</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="Gender" value="Female" id="female" />
+                                        <label class="form-check-label text-white" for="female">Nữ</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="Gender" value="Other" id="other" />
+                                        <label class="form-check-label text-white" for="other">Khác</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div data-mdb-input-init class="form-outline">
+                                    <input type="password" name="Password" class="form-control form-control-lg bg-transparent text-white border-0 border-bottom border-white" required minlength="6" />
+                                    <label class="form-label text-white">Mật khẩu</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div data-mdb-input-init class="form-outline">
+                                    <input type="password" name="ConfirmPassword" class="form-control form-control-lg bg-transparent text-white border-0 border-bottom border-white" required />
+                                    <label class="form-label text-white">Nhập lại mật khẩu</label>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-check text-start ms-4">
+                                    <input class="form-check-input" type="checkbox" id="agree" required />
+                                    <label class="form-check-label text-white" for="agree">
+                                        Tôi đồng ý với <a href="#!" class="text-warning text-decoration-underline">Điều khoản dịch vụ</a>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-12 text-center mt-4">
+                                <button type="submit" class="btn btn-lg px-5 text-dark fw-bold"
+                                        style="background: linear-gradient(45deg, #ff9a9e, #fad0c4); border-radius: 50px;">
+                                    Tạo tài khoản ngay
+                                </button>
+                            </div>
+
+                            <div class="col-12 text-center mt-3">
+                                <p class="text-white-50 mb-0">
+                                    Đã có tài khoản?
+                                    <a href="/Login" class="text-warning fw-bold text-decoration-underline">Đăng nhập tại đây</a>
+                                </p>
                             </div>
                         </div>
-                    </div>
+                    </form>
+                </div>
+
+                <div class="card-footer bg-transparent border-0 text-center py-4">
+                    <p class="text-white-50 small mb-0">
+                        © 2025 SIMS• Phát triển với <i class="fas fa-heart text-danger"></i> tại Việt Nam
+                    </p>
                 </div>
             </div>
         </div>
     </div>
-</section>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.form-outline').forEach(f => new mdb.Input(f).init());
+    </script>
+}

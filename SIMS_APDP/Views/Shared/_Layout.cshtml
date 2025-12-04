@@ -1,50 +1,110 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - SIMS_APDP</title>
-    <script type="importmap"></script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/SIMS_APDP.styles.css" asp-append-version="true" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] • SIMS</title>
+    <link rel="icon" href="~/favicon.ico" />
+
+    <!-- Font + Icon -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.3.2/mdb.min.css" rel="stylesheet" />
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            /* Gradient động cho trang Login/Register */
+            background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #f5576c);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+        }
+
+        @@keyframes gradient {
+            0%, 100% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        /* Thanh navbar cố định trên cùng - đẹp như bạn muốn */
+        .auth-navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 9999;
+            background: rgba(0, 0, 0, 0.25) !important;
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+            .auth-navbar .navbar-brand {
+                font-weight: 800;
+                font-size: 1.8rem;
+                text-shadow: 0 2px 10px rgba(0,0,0,0.4);
+            }
+
+            .auth-navbar .btn-outline-light {
+                border-radius: 50px;
+                padding: 8px 20px;
+                font-weight: 600;
+            }
+    </style>
+
+    @RenderSection("Styles", required: false)
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">SIMS_APDP</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+
+    <!-- Thanh navbar giống hệt bạn yêu cầu -->
+    <nav class="navbar navbar-expand-lg navbar-dark auth-navbar shadow-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">SIMS</a>
+            <button class="navbar-toggler" type="button" data-mdb-toggle="collapse" data-mdb-target="#authNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="authNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-white d-flex align-items-center" href="#" data-mdb-toggle="dropdown">
+                                <i class="fas fa-user-circle fa-lg me-2"></i> @User.Identity.Name
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="/Profile">Thông tin cá nhân</a></li>
+                                <li><hr class="dropdown-divider" /></li>
+                                <li><a class="dropdown-item text-danger" href="/Account/Logout">Đăng xuất</a></li>
+                            </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                </div>
+                    }
+                    else
+                    {
+                        @if (!ViewData["Title"]?.ToString().Contains("Đăng nhập") ?? false)
+                        {
+                            <a class="nav-link" href="/Login">Đăng nhập</a>
+                        }
+                        @if (!ViewData["Title"]?.ToString().Contains("Đăng ký") ?? false)
+                        {
+                            <a class="btn btn-outline-light ms-3" href="/Register">Đăng ký</a>
+                        }
+                    }
+                </ul>
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+        </div>
+    </nav>
+
+    <!-- Nội dung chính (có padding để không bị đè bởi navbar) -->
+    <div style="padding-top: 90px; min-height: 100vh; display: flex; align-items: center; justify-content: center;">
+        @RenderBody()
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - SIMS_APDP - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.3.2/mdb.umd.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
