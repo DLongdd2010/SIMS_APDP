@@ -6,7 +6,7 @@ namespace SIMS_APDP.Models
     {
         [Key]
         public int RoomId { get; set; }
-        [Required]
+        [Required, MaxLength(20)]
         public string RoomName { get; set; }
     }
 }

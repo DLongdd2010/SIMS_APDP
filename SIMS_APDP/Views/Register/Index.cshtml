@@ -1,119 +1,126 @@
 ﻿@{
-    ViewData["Title"] = "Đăng ký tài khoản";
+    ViewData["Title"] = "Đăng ký tài khoản sinh viên";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+@model SIMS_APDP.Models.User
 
-<div class="container py-5">
+<div class="container">
     <div class="row justify-content-center">
-        <div class="col-12 col-md-10 col-lg-8 col-xl-7">
-            <div class="card border-0 shadow-lg" style="border-radius: 25px; backdrop-filter: blur(16px); background: rgba(255,255,255,0.20); border: 1px solid rgba(255,255,255,0.3);">
-                <div class="card-body p-5 text-center">
-                    <h1 class="text-white fw-bold mb-4" style="font-size: 3.5rem; text-shadow: 0 5px 15px rgba(0,0,0,0.4);">SIMS</h1>
-                    <p class="text-white fs-5 mb-5 opacity-90">Tạo tài khoản để bắt đầu hành trình học tập</p>
+        <div class="col-12 col-md-10 col-lg-8">
+            <div class="card shadow-lg border-0" style="border-radius:20px;background:rgba(255,255,255,0.95);">
+                <div class="card-body p-5">
+                    <div class="text-center mb-5">
+                        <h1 class="text-success fw-bold" style="font-size:3.5rem;">SIMS</h1>
+                        <p class="text-muted fs-5">Đăng ký tài khoản <strong class="text-success">Sinh viên</strong></p>
+                        <div class="badge bg-success text-white fs-6">Miễn phí • Chỉ dành cho sinh viên</div>
+                    </div>
 
-                    <form asp-action="Register" asp-controller="Account" method="post">
-                        <div class="row g-4">
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show mb-4">
+                            <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+                            <button type="button" class="btn-close" data-mdb-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    @if (!ViewData.ModelState.IsValid && ViewData.ModelState.ErrorCount > 0)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Vui lòng sửa các lỗi bên dưới và thử lại.
+                            <button type="button" class="btn-close" data-mdb-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <form asp-action="Index" asp-controller="Register" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div class="row g-3">
+
                             <div class="col-md-6">
                                 <div data-mdb-input-init class="form-outline">
-                                    <input type="text" name="Username" class="form-control form-control-lg bg-transparent text-white border-0 border-bottom border-white" required />
-                                    <label class="form-label text-white">Tên đăng nhập</label>
+                                    <input asp-for="Username" class="form-control form-control-lg" required />
+                                    <label asp-for="Username" class="form-label">Tên đăng nhập</label>
+                                    <span asp-validation-for="Username" class="text-danger"></span>
                                 </div>
                             </div>
+
                             <div class="col-md-6">
                                 <div data-mdb-input-init class="form-outline">
-                                    <input type="text" name="FullName" class="form-control form-control-lg bg-transparent text-white border-0 border-bottom border-white" required />
-                                    <label class="form-label text-white">Họ và tên</label>
+                                    <input asp-for="FullName" class="form-control form-control-lg" required />
+                                    <label asp-for="FullName" class="form-label">Họ và tên</label>
                                 </div>
                             </div>
 
                             <div class="col-12">
                                 <div data-mdb-input-init class="form-outline">
-                                    <input type="email" name="Email" class="form-control form-control-lg bg-transparent text-white border-0 border-bottom border-white" required />
-                                    <label class="form-label text-white">Email</label>
+                                    <input asp-for="Email" class="form-control form-control-lg" required />
+                                    <label asp-for="Email" class="form-label">Email sinh viên</label>
+                                    <span asp-validation-for="Email" class="text-danger"></span>
                                 </div>
                             </div>
 
                             <div class="col-12">
                                 <div data-mdb-input-init class="form-outline">
-                                    <input type="text" name="Address" class="form-control form-control-lg bg-transparent text-white border-0 border-bottom border-white" required />
-                                    <label class="form-label text-white">Địa chỉ</label>
+                                    <input asp-for="Address" class="form-control form-control-lg" required />
+                                    <label asp-for="Address" class="form-label">Địa chỉ</label>
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <div data-mdb-input-init class="form-outline">
-                                    <input type="tel" name="PhoneNumber" class="form-control form-control-lg bg-transparent text-white border-0 border-bottom border-white" />
-                                    <label class="form-label text-white">Số điện thoại</label>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div data-mdb-input-init class="form-outline">
-                                    <input type="date" name="DateOfBirth" class="form-control form-control-lg bg-transparent text-white border-0 border-bottom border-white" required />
-                                    <label class="form-label text-white">Ngày sinh</label>
-                                </div>
-                            </div>
-
-                            <div class="col-12 text-start">
-                                <label class="text-white fw-bold mb-3">Giới tính</label>
-                                <div class="d-flex justify-content-center gap-5">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="Gender" value="Male" id="male" checked />
-                                        <label class="form-check-label text-white" for="male">Nam</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="Gender" value="Female" id="female" />
-                                        <label class="form-check-label text-white" for="female">Nữ</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="Gender" value="Other" id="other" />
-                                        <label class="form-check-label text-white" for="other">Khác</label>
-                                    </div>
+                                    <input asp-for="PhoneNumber" class="form-control form-control-lg" />
+                                    <label asp-for="PhoneNumber" class="form-label">Số điện thoại</label>
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <div data-mdb-input-init class="form-outline">
-                                    <input type="password" name="Password" class="form-control form-control-lg bg-transparent text-white border-0 border-bottom border-white" required minlength="6" />
-                                    <label class="form-label text-white">Mật khẩu</label>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div data-mdb-input-init class="form-outline">
-                                    <input type="password" name="ConfirmPassword" class="form-control form-control-lg bg-transparent text-white border-0 border-bottom border-white" required />
-                                    <label class="form-label text-white">Nhập lại mật khẩu</label>
+                                    <input asp-for="DateOfBirth" type="date" class="form-control form-control-lg" required />
+                                    <label asp-for="DateOfBirth" class="form-label">Ngày sinh</label>
                                 </div>
                             </div>
 
                             <div class="col-12">
-                                <div class="form-check text-start ms-4">
-                                    <input class="form-check-input" type="checkbox" id="agree" required />
-                                    <label class="form-check-label text-white" for="agree">
-                                        Tôi đồng ý với <a href="#!" class="text-warning text-decoration-underline">Điều khoản dịch vụ</a>
-                                    </label>
+                                <label class="form-label text-success fw-bold">Giới tính</label>
+                                <div class="d-flex gap-4 justify-content-center">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" asp-for="Gender" value="Male" checked />
+                                        <label class="form-check-label">Nam</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" asp-for="Gender" value="Female" />
+                                        <label class="form-check-label">Nữ</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" asp-for="Gender" value="Other" />
+                                        <label class="form-check-label">Khác</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div data-mdb-input-init class="form-outline">
+                                    <input asp-for="Password" type="password" class="form-control form-control-lg" required minlength="6" />
+                                    <label asp-for="Password" class="form-label">Mật khẩu (tối thiểu 6 ký tự)</label>
                                 </div>
                             </div>
 
                             <div class="col-12 text-center mt-4">
-                                <button type="submit" class="btn btn-lg px-5 text-dark fw-bold"
-                                        style="background: linear-gradient(45deg, #ff9a9e, #fad0c4); border-radius: 50px;">
-                                    Tạo tài khoản ngay
+                                <button type="submit" class="btn btn-success text-white btn-lg px-5"
+                                        style="border-radius:50px;font-weight:600;">
+                                    Đăng ký làm Sinh viên
                                 </button>
                             </div>
 
                             <div class="col-12 text-center mt-3">
-                                <p class="text-white-50 mb-0">
+                                <p class="text-muted">
                                     Đã có tài khoản?
-                                    <a href="/Login" class="text-warning fw-bold text-decoration-underline">Đăng nhập tại đây</a>
+                                    <a href="@Url.Action("Index", "Login")" class="text-success fw-bold text-decoration-underline">Đăng nhập ngay</a>
                                 </p>
                             </div>
                         </div>
                     </form>
-                </div>
-
-                <div class="card-footer bg-transparent border-0 text-center py-4">
-                    <p class="text-white-50 small mb-0">
-                        © 2025 SIMS• Phát triển với <i class="fas fa-heart text-danger"></i> tại Việt Nam
-                    </p>
                 </div>
             </div>
         </div>
@@ -121,6 +128,7 @@
 </div>
 
 @section Scripts {
+    <partial name="_ValidationScriptsPartial" />
     <script>
         document.querySelectorAll('.form-outline').forEach(f => new mdb.Input(f).init());
     </script>

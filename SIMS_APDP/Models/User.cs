@@ -1,43 +1,44 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SIMS_APDP.Models
 {
+    [Table("User")]
     public class User
     {
         [Key]
         public int UserId { get; set; }
 
         [Required]
+        public int RoleId { get; set; }
+
+        [Required]
+        [StringLength(50)]
         public string Username { get; set; }
 
         [Required, EmailAddress]
+        [StringLength(100)]
         public string Email { get; set; }
 
         [Required]
         public string Password { get; set; }
 
-        [Required]
-        public string FullName { get; set; }
+        public string? FullName { get; set; }
 
-        [Required]
-        public string Address { get; set; }
+        public string? Address { get; set; }
 
         public string? Gender { get; set; }
 
         [Phone]
         public string? PhoneNumber { get; set; }
 
-        [Required]
-        public DateTime DateOfBirth { get; set; } = DateTime.UtcNow;
+        public DateTime? DateOfBirth { get; set; }
 
-        // Explicit FK to Role
-        public int RoleId { get; set; }
+        // Navigation property không bind từ Form
+        [NotMapped]
+        public Role? Role { get; set; }
 
-        [ForeignKey("RoleId")]
-        public Role Role { get; set; }
-
-        // Optional navigation collections
         public ICollection<StudentCourse> StudentCourses { get; set; } = new List<StudentCourse>();
     }
 }

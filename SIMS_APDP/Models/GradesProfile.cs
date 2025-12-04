@@ -18,7 +18,7 @@ namespace SIMS_APDP.Models
         public decimal? Grade { get; set; }
 
         [MaxLength(20)]
-        public string Ranking { get; set; }
+        public string? Ranking { get; set; }
 
         // Who updated
         public int? UpdatedBy { get; set; }
@@ -27,9 +27,9 @@ namespace SIMS_APDP.Models
 
         // Navigation properties
         // Composite FK configured in Fluent API
-        public StudentCourse StudentCourse { get; set; }
+        public StudentCourse? StudentCourse { get; set; }
 
         [ForeignKey("UpdatedBy")]
-        public User UpdatedByUser { get; set; }
+        public User? UpdatedByUser { get; set; }
     }
 }
