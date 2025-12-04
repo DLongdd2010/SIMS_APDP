@@ -13,30 +13,31 @@ namespace SIMS_APDP.Models
         [Required]
         public int RoleId { get; set; }
 
-        [Required]
-        [StringLength(50)]
+        [Required, StringLength(50)]
         public string Username { get; set; }
 
-        [Required, EmailAddress]
-        [StringLength(100)]
+        [Required, EmailAddress, StringLength(100)]
         public string Email { get; set; }
 
         [Required]
         public string Password { get; set; }
 
-        public string? FullName { get; set; }
+        [Required, StringLength(100)]        
+        public string FullName { get; set; }
 
-        public string? Address { get; set; }
+        [Required, StringLength(255)]        
+        public string Address { get; set; }
 
         public string? Gender { get; set; }
 
         [Phone]
         public string? PhoneNumber { get; set; }
 
-        public DateTime? DateOfBirth { get; set; }
+        [Required]                           
+        public DateTime DateOfBirth { get; set; }
 
-        // Navigation property không bind từ Form
-        [NotMapped]
+        // Navigation (KHÔNG được NotMapped)
+        [ForeignKey("RoleId")]
         public Role? Role { get; set; }
 
         public ICollection<StudentCourse> StudentCourses { get; set; } = new List<StudentCourse>();

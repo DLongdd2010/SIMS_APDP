@@ -18,32 +18,70 @@ namespace SIMS_APDP.Data
         public DbSet<User> Users { get; set; }
         public DbSet<StudentCourse> StudentCourses { get; set; }
 
-        // Configure model / relationships / constraints
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Seed roles
-            modelBuilder.Entity<Role>().HasData(
-                new Role { RoleId = 1, RoleName = "Admin" },
-                new Role { RoleId = 2, RoleName = "Teacher" },
-                new Role { RoleId = 3, RoleName = "Student" }
-            );
+            base.OnModelCreating(modelBuilder);
 
-            // User <-> Role (explicit FK RoleId)
+            // ======================
+            // ROLE TABLE
+            // ======================
+            modelBuilder.Entity<Role>()
+                .ToTable("Role");
+
+            // ======================
+            // USER TABLE
+            // ======================
+            modelBuilder.Entity<User>()
+                .ToTable("User");
+
             modelBuilder.Entity<User>()
                 .HasOne(u => u.Role)
                 .WithMany(r => r.Users)
                 .HasForeignKey(u => u.RoleId)
-                .IsRequired()
-                .OnDelete(DeleteBehavior.Restrict); // prevent role deletion if users exist
+                .OnDelete(DeleteBehavior.Restrict);
 
-            // Course <-> Teacher (Course.TeacherId optional)
+            // ======================
+            // COURSE TABLE
+            // ======================
+            modelBuilder.Entity<Course>()
+                .ToTable("Course");
+
             modelBuilder.Entity<Course>()
                 .HasOne(c => c.Teacher)
                 .WithMany()
                 .HasForeignKey(c => c.TeacherId)
-                .OnDelete(DeleteBehavior.SetNull); // keep course if teacher removed
+                .OnDelete(DeleteBehavior.SetNull);
 
-            // StudentCourse composite key and relations
+            // ======================
+            // ROOM TABLE
+            // ======================
+            modelBuilder.Entity<Room>()
+                .ToTable("Room");
+
+            // ======================
+            // TIMETABLE TABLE
+            // ======================
+            modelBuilder.Entity<Timetable>()
+                .ToTable("Timetable");
+
+            modelBuilder.Entity<Timetable>()
+                .HasOne(t => t.Course)
+                .WithMany()
+                .HasForeignKey(t => t.CourseId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Timetable>()
+                .HasOne(t => t.Room)
+                .WithMany()
+                .HasForeignKey(t => t.RoomId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // ======================
+            // STUDENT COURSE TABLE
+            // ======================
+            modelBuilder.Entity<StudentCourse>()
+                .ToTable("Student_Course");
+
             modelBuilder.Entity<StudentCourse>()
                 .HasKey(sc => new { sc.UserId, sc.CourseId, sc.Semester });
 
@@ -51,55 +89,49 @@ namespace SIMS_APDP.Data
                 .HasOne(sc => sc.User)
                 .WithMany()
                 .HasForeignKey(sc => sc.UserId)
-                .OnDelete(DeleteBehavior.Restrict); // prevent deleting user if enrollments exist
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<StudentCourse>()
                 .HasOne(sc => sc.Course)
                 .WithMany()
                 .HasForeignKey(sc => sc.CourseId)
-                .OnDelete(DeleteBehavior.Restrict); // prevent deleting course if enrollments exist
+                .OnDelete(DeleteBehavior.Cascade);
 
-            // GradesProfile: composite FK to StudentCourse (UserId, CourseId, Semester)
+            // ======================
+            // GRADES PROFILE TABLE
+            // ======================
+            modelBuilder.Entity<GradesProfile>()
+                .ToTable("GradesProfile");
+
             modelBuilder.Entity<GradesProfile>()
                 .HasOne(g => g.StudentCourse)
                 .WithMany()
                 .HasForeignKey(g => new { g.UserId, g.CourseId, g.Semester })
-                .OnDelete(DeleteBehavior.Restrict); // keep grades intact; prevent deleting studentcourse while grades exist
+                .OnDelete(DeleteBehavior.Cascade);
 
-            // GradesProfile: UpdatedBy -> User (optional)
             modelBuilder.Entity<GradesProfile>()
                 .HasOne(g => g.UpdatedByUser)
                 .WithMany()
                 .HasForeignKey(g => g.UpdatedBy)
                 .OnDelete(DeleteBehavior.SetNull);
 
-            // Timetable: CourseId and RoomId as explicit FKs
-            modelBuilder.Entity<Timetable>()
-                .HasOne(t => t.Course)
-                .WithMany()
-                .HasForeignKey(t => t.CourseId)
-                .OnDelete(DeleteBehavior.SetNull); // if course removed, keep timetable but nullify course
+            // ======================
+            // FEEDBACK TABLE
+            // ======================
+            modelBuilder.Entity<Feedback>()
+                .ToTable("Feedback");
 
-            modelBuilder.Entity<Timetable>()
-                .HasOne(t => t.Room)
-                .WithMany()
-                .HasForeignKey(t => t.RoomId)
-                .OnDelete(DeleteBehavior.Restrict); // don't allow room deletion when timetables reference it
-
-            // Feedback relations
             modelBuilder.Entity<Feedback>()
                 .HasOne(f => f.User)
                 .WithMany()
                 .HasForeignKey(f => f.UserId)
-                .OnDelete(DeleteBehavior.Restrict); // keep feedbacks when user deletion is protected
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Feedback>()
                 .HasOne(f => f.Course)
                 .WithMany()
                 .HasForeignKey(f => f.CourseId)
                 .OnDelete(DeleteBehavior.SetNull);
-
-            base.OnModelCreating(modelBuilder);
         }
-    }   
+    }
 }
