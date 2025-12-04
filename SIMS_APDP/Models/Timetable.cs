@@ -18,7 +18,7 @@ namespace SIMS_APDP.Models
         public int CourseId { get; set; }
         public int? RoomId { get; set; }
         [ForeignKey("CourseId")]
-        public Course Course { get; set; }
+        public Course? Course { get; set; }
         [ForeignKey("RoomId")]
         public Room? Room { get; set; }
     }

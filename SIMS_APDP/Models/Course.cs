@@ -7,10 +7,9 @@ namespace SIMS_APDP.Models
     {
         [Key]
         public int CourseId { get; set; }
-        [Required, MaxLength(255)]
+        [Required, MaxLength(100)]   // Sửa lỗi MaxLength
         public string CourseName { get; set; }
-        [Required]
-        public string Description { get; set; }
+        public string? Description { get; set; }
         [Required, Range(1, 10)]
         public int Credits { get; set; }
         public int? TeacherId { get; set; }// Thêm TeacherId để gán teacher cho course
