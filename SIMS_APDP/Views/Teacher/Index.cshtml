@@ -1,34 +1,71 @@
 ﻿@{
-    ViewData["Title"] = "Giảng viên";
+    ViewData["Title"] = "Home_Teacher";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="text-center py-10">
-    <h1 class="text-4xl font-bold text-secondary mb-8">Cổng thông tin Giảng viên</h1>
+<div class="container py-5">
+    <!-- Header chào mừng -->
+    <div class="text-center mb-5">
+        <h1 class="display-4 text-secondary fw-bold">Cổng thông tin Giảng viên</h1>
+        <p class="lead">Quản lý lớp học, điểm số, lịch giảng dạy và phản hồi</p>
+    </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-        <a href="/Teacher/Classes" class="card bg-base-100 shadow-xl hover:shadow-2xl transition">
-            <div class="card-body items-center text-center">
-                <div class="text-5xl text-success">Users</div>
-                <h2 class="card-title">Danh sách lớp</h2>
+    <!-- Các card chức năng -->
+    <div class="row g-4 justify-content-center">
+        <!-- Card 1: Danh sách lớp -->
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="card h-100 text-white bg-primary shadow-lg border-0">
+                <div class="card-body text-center d-flex flex-column justify-content-between">
+                    <div>
+                        <i class="fas fa-users fa-3x mb-3"></i>
+                        <h5 class="card-title fw-bold">Danh sách lớp</h5>
+                        <p class="card-text">Xem danh sách các lớp đang giảng dạy</p>
+                    </div>
+                    <a href="/Teacher/Classes" class="btn btn-light mt-3">Xem ngay</a>
+                </div>
             </div>
-        </a>
-        <a href="/Teacher/Grades" class="card bg-base-100 shadow-xl hover:shadow-2xl transition">
-            <div class="card-body items-center text-center">
-                <div class="text-5xl text-warning">Grade</div>
-                <h2 class="card-title">Nhập điểm</h2>
+        </div>
+
+        <!-- Card 2: Nhập điểm -->
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="card h-100 text-white bg-success shadow-lg border-0">
+                <div class="card-body text-center d-flex flex-column justify-content-between">
+                    <div>
+                        <i class="fas fa-clipboard-list fa-3x mb-3"></i>
+                        <h5 class="card-title fw-bold">Nhập điểm</h5>
+                        <p class="card-text">Nhập kết quả học tập cho các môn</p>
+                    </div>
+                    <a href="/Teacher/Grades" class="btn btn-light mt-3">Nhập ngay</a>
+                </div>
             </div>
-        </a>
-        <a href="/Teacher/Timetable" class="card bg-base-100 shadow-xl hover:shadow-2xl transition">
-            <div class="card-body items-center text-center">
-                <div class="text-5xl text-info">Schedule</div>
-                <h2 class="card-title">Lịch giảng dạy</h2>
+        </div>
+
+        <!-- Card 3: Lịch giảng dạy -->
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="card h-100 text-white bg-info shadow-lg border-0">
+                <div class="card-body text-center d-flex flex-column justify-content-between">
+                    <div>
+                        <i class="fas fa-calendar-alt fa-3x mb-3"></i>
+                        <h5 class="card-title fw-bold">Lịch giảng dạy</h5>
+                        <p class="card-text">Xem thời khóa biểu giảng dạy chi tiết</p>
+                    </div>
+                    <a href="/Teacher/Timetable" class="btn btn-light mt-3">Xem lịch</a>
+                </div>
             </div>
-        </a>
-        <a href="/Teacher/Feedback" class="card bg-base-100 shadow-xl hover:shadow-2xl transition">
-            <div class="card-body items-center text-center">
-                <div class="text-5xl text-error">Feedback</div>
-                <h2 class="card-title">Xem phản hồi</h2>
+        </div>
+
+        <!-- Card 4: Xem phản hồi -->
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="card h-100 text-white bg-warning shadow-lg border-0">
+                <div class="card-body text-center d-flex flex-column justify-content-between">
+                    <div>
+                        <i class="fas fa-comment-dots fa-3x mb-3"></i>
+                        <h5 class="card-title fw-bold">Phản hồi</h5>
+                        <p class="card-text">Xem các phản hồi từ sinh viên</p>
+                    </div>
+                    <a href="/Teacher/Feedback" class="btn btn-light mt-3">Xem ngay</a>
+                </div>
             </div>
-        </a>
+        </div>
     </div>
 </div>

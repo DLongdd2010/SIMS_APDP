@@ -1,36 +1,56 @@
 ﻿@{
-    ViewData["Title"] = "Sinh viên - Trang chủ";
+    ViewData["Title"] = "Home_Student";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="row row-cols-1 row-cols-md-3 g-4">
-    <div class="col">
-        <div class="card h-100 text-white bg-primary shadow-lg">
-            <div class="card-body text-center">
-                <i class="fas fa-calendar-alt fa-3x mb-3"></i>
-                <h5 class="card-title">Thời khóa biểu</h5>
-                <p class="card-text">Xem lịch học chi tiết theo tuần</p>
-                <a href="/Student/Timetable" class="btn btn-light">Xem ngay</a>
+<div class="container py-5">
+    <!-- Header chào mừng -->
+    <div class="text-center mb-5">
+        <h1 class="display-4 text-success fw-bold">Chào mừng Sinh viên @User.Identity.Name</h1>
+        <p class="lead">Chúc bạn học tập thật tốt!</p>
+    </div>
+
+    <!-- Các card chức năng -->
+    <div class="row g-4 justify-content-center">
+        <!-- Card 1: Thời khóa biểu -->
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card h-100 text-white bg-primary shadow-lg border-0">
+                <div class="card-body text-center d-flex flex-column justify-content-between">
+                    <div>
+                        <i class="fas fa-calendar-alt fa-3x mb-3"></i>
+                        <h5 class="card-title fw-bold">Thời khóa biểu</h5>
+                        <p class="card-text">Xem lịch học chi tiết theo tuần</p>
+                    </div>
+                    <a href="/Student/Timetable" class="btn btn-light mt-3">Xem ngay</a>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="col">
-        <div class="card h-100 text-white bg-success shadow-lg">
-            <div class="card-body text-center">
-                <i class="fas fa-clipboard-list fa-3x mb-3"></i>
-                <h5 class="card-title">Điểm số</h5>
-                <p class="card-text">Kết quả học tập tất cả môn</p>
-                <a href="/Student/Grades" class="btn btn-light">Xem điểm</a>
+
+        <!-- Card 2: Điểm số -->
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card h-100 text-white bg-success shadow-lg border-0">
+                <div class="card-body text-center d-flex flex-column justify-content-between">
+                    <div>
+                        <i class="fas fa-clipboard-list fa-3x mb-3"></i>
+                        <h5 class="card-title fw-bold">Điểm số</h5>
+                        <p class="card-text">Kết quả học tập tất cả môn</p>
+                    </div>
+                    <a href="/Student/Grades" class="btn btn-light mt-3">Xem điểm</a>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="col">
-        <div class="card h-100 text-white bg-warning shadow-lg">
-            <div class="card-body text-center">
-                <i class="fas fa-comment-dots fa-3x mb-3"></i>
-                <h5 class="card-title">Phản hồi giảng viên</h5>
-                <p class="card-text">Gửi góp ý cho thầy cô</p>
-                <a href="/Student/Feedback" class="btn btn-light">Gửi phản hồi</a>
+
+        <!-- Card 3: Phản hồi giảng viên -->
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card h-100 text-white bg-warning shadow-lg border-0">
+                <div class="card-body text-center d-flex flex-column justify-content-between">
+                    <div>
+                        <i class="fas fa-comment-dots fa-3x mb-3"></i>
+                        <h5 class="card-title fw-bold">Phản hồi giảng viên</h5>
+                        <p class="card-text">Gửi góp ý cho thầy cô</p>
+                    </div>
+                    <a href="/Student/Feedback" class="btn btn-light mt-3">Gửi phản hồi</a>
+                </div>
             </div>
         </div>
     </div>

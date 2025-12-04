@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>@ViewData["Title"] • SIMS </title>
+    <title>@ViewData["Title"] • SIMS</title>
     <link rel="icon" href="~/favicon.ico" />
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -12,10 +12,7 @@
 
     <style>
         :root {
-            --primary: #00b894; /* Xanh lá đậm */
-            --primary-light: #55efc4;
-            --primary-dark: #00a085;
-            --secondary: #74b9ff;
+            --primary: #00b894;
             --bg-gradient: linear-gradient(135deg, #00b894, #00cec9);
         }
 
@@ -27,26 +24,33 @@
         }
 
         .navbar-custom {
-            background: rgba(0, 184, 148, 0.95) !important;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            background: rgba(0, 184, 148, 0.98) !important;
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 4px 30px rgba(0,0,0,0.3);
         }
 
-            .navbar-custom .navbar-brand {
-                font-weight: 800;
+            .navbar-custom .navbar-brand, .navbar-custom .btn-back-home {
+                font-weight: 700;
                 font-size: 1.8rem;
                 color: white !important;
+                text-shadow: 0 2px 10px rgba(0,0,0,0.4);
+                transition: all 0.3s;
             }
 
-        .btn-primary-custom {
-            background: linear-gradient(45deg, #00b894, #00cec9);
-            border: none;
+                .navbar-custom .navbar-brand:hover,
+                .navbar-custom .btn-back-home:hover {
+                    transform: scale(1.05);
+                    color: #fff !important;
+                }
+
+        .btn-custom {
             border-radius: 50px;
-            padding: 10px 30px;
+            padding: 10px 28px;
             font-weight: 600;
         }
 
-            .btn-primary-custom:hover {
+            .btn-custom:hover {
                 transform: translateY(-3px);
                 box-shadow: 0 10px 25px rgba(0,184,148,0.4);
             }
@@ -54,26 +58,52 @@
 </head>
 <body>
 
-    <!-- Navbar xanh lá đẹp -->
-    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom shadow-lg">
+    <!-- NAVBAR SIÊU THÔNG MINH – CÓ NÚT QUAY LẠI THEO ROLE -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom shadow-lg fixed-top">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/">SIMS</a>
-            <div class="ms-auto">
+            @{
+                var homeUrl = "/";
+                if (User.Identity.IsAuthenticated)
+                {
+                    var roleIdClaim = User.FindFirst("RoleId")?.Value;
+                    if (int.TryParse(roleIdClaim, out int roleId))
+                    {
+                        homeUrl = roleId switch
+                        {
+                            1 => "/Admin",
+                            2 => "/Teacher",
+                            3 => "/Student",
+                            _ => "/"
+                        };
+                    }
+                }
+            }
+            <!-- Logo SIMS -->
+            <a class="navbar-brand" href="@homeUrl">
+                <i class="fas fa-home me-2"></i>SIMS
+            </a>
+
+            <!-- Phần bên phải: Tên người dùng + Đăng xuất -->
+            <div class="ms-auto d-flex align-items-center gap-3">
                 @if (User.Identity.IsAuthenticated)
                 {
-                    <span class="text-white me-3">Xin chào, @User.Identity.Name</span>
-                    <a href="/Account/Logout" class="btn btn-outline-light btn-sm">Đăng xuất</a>
+                    <span class="text-white fw-medium">
+                        <i class="fas fa-user-circle me-2"></i>@User.Identity.Name
+                    </span>
+                    <a href="/logout" class="btn btn-outline-light btn-custom">
+                        <i class="fas fa-sign-out-alt me-1"></i>Đăng xuất
+                    </a>
                 }
                 else
                 {
-                    <a href="/Login" class="btn btn-outline-light me-2">Đăng nhập</a>
-                    <a href="/Register" class="btn btn-light text-dark">Đăng ký</a>
+                    <a href="/Login" class="btn btn-outline-light btn-custom">Đăng nhập</a>
+                    <a href="/Register" class="btn btn-light text-dark btn-custom">Đăng ký</a>
                 }
             </div>
         </div>
     </nav>
 
-    <div style="padding-top: 90px; min-height: 100vh; display: flex; align-items: center; justify-content: center;">
+    <div style="padding-top: 100px; min-height: 100vh;">
         @RenderBody()
     </div>
 
@@ -81,6 +111,5 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.3.2/mdb.umd.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
-
 </body>
 </html>
