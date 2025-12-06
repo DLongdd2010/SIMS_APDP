@@ -1,9 +1,621 @@
 ﻿@{
-    ViewData["Title"] = "Quản lý thời khóa biểu";
+    ViewData["Title"] = "Timetable Management";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container py-5">
-    <h1>Quản lý thời khóa biểu</h1>
-    <p>Trang quản lý thời khóa biểu đang được phát triển...</p>
+<div class="container-fluid py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0">Timetable Management</h1>
+            <small class="text-muted">Manage class schedules</small>
+        </div>
+        <div>
+            <button id="btnRefresh" class="btn btn-outline-secondary me-2" title="Refresh data">
+                <i class="bi bi-arrow-clockwise"></i> Refresh
+            </button>
+            <button id="btnAdd" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#timetableModal">
+                <i class="bi bi-plus-circle"></i> Add Schedule
+            </button>
+        </div>
+    </div>
+
+    <!-- Filter Card -->
+    <div class="card mb-4 shadow-sm border-0">
+        <div class="card-body">
+            <div class="row g-2">
+                <div class="col-lg-3">
+                    <label class="form-label small">Select Course</label>
+                    <select id="courseFilter" class="form-select">
+                        <option value="">-- All Courses --</option>
+                    </select>
+                </div>
+                <div class="col-lg-3">
+                    <label class="form-label small">Select Semester</label>
+                    <select id="semesterFilter" class="form-select">
+                        <option value="">-- All Semesters --</option>
+                        <option value="Fall">Fall</option>
+                        <option value="Spring">Spring</option>
+                        <option value="Summer">Summer</option>
+                    </select>
+                </div>
+                <div class="col-lg-3">
+                    <label class="form-label small">Select Day</label>
+                    <select id="dayFilter" class="form-select">
+                        <option value="">-- All Days --</option>
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option>
+                        <option value="Saturday">Saturday</option>
+                    </select>
+                </div>
+                <div class="col-lg-3 text-end">
+                    <label class="form-label small">Total Schedules</label>
+                    <div><strong id="totalCount">0</strong> sessions</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Timetable Table -->
+    <div class="card shadow-sm border-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width:120px;">Course</th>
+                        <th style="width:100px;">Day</th>
+                        <th style="width:120px;">Time</th>
+                        <th style="width:100px;">Room</th>
+                        <th style="width:100px;">Semester</th>
+                        <th style="width:140px; text-align: center;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="timetableTbody">
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-5">
+                            <div class="spinner-border spinner-border-sm" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            Loading data...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="d-flex justify-content-between align-items-center mt-4">
+        <div>
+            <label class="form-label me-2 mb-0">Show</label>
+            <select id="pageSize" class="form-select d-inline-block" style="width:100px">
+                <option value="5">5</option>
+                <option value="10" selected>10</option>
+                <option value="25">25</option>
+            </select>
+            <span class="text-muted ms-2">schedules / page</span>
+        </div>
+        <nav aria-label="Pagination">
+            <ul id="pagination" class="pagination mb-0"></ul>
+        </div>
+    </div>
 </div>
+
+<!-- Add/Edit Modal -->
+<div class="modal fade" id="timetableModal" tabindex="-1" aria-labelledby="timetableModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <form id="timetableForm" class="modal-content needs-validation" novalidate>
+            <div class="modal-header bg-light">
+                <h5 class="modal-title" id="timetableModalLabel">
+                    <i class="bi bi-plus-circle"></i> Add Schedule
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input id="timetableId" type="hidden" />
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Course <span class="text-danger">*</span></label>
+                        <select id="course" class="form-select" required>
+                            <option value="">-- Select Course --</option>
+                        </select>
+                        <div class="invalid-feedback">Course is required.</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Day <span class="text-danger">*</span></label>
+                        <select id="dayOfWeek" class="form-select" required>
+                            <option value="">-- Select Day --</option>
+                            <option value="Monday">Monday</option>
+                            <option value="Tuesday">Tuesday</option>
+                            <option value="Wednesday">Wednesday</option>
+                            <option value="Thursday">Thursday</option>
+                            <option value="Friday">Friday</option>
+                            <option value="Saturday">Saturday</option>
+                        </select>
+                        <div class="invalid-feedback">Day is required.</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Start Time <span class="text-danger">*</span></label>
+                        <input id="startTime" type="time" class="form-control" required />
+                        <div class="invalid-feedback">Start time is required.</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">End Time <span class="text-danger">*</span></label>
+                        <input id="endTime" type="time" class="form-control" required />
+                        <div class="invalid-feedback">End time is required.</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Room</label>
+                        <select id="room" class="form-select">
+                            <option value="">-- Select Room --</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Semester <span class="text-danger">*</span></label>
+                        <select id="semester" class="form-select" required>
+                            <option value="">-- Select Semester --</option>
+                            <option value="Fall">Fall</option>
+                            <option value="Spring">Spring</option>
+                            <option value="Summer">Summer</option>
+                        </select>
+                        <div class="invalid-feedback">Semester is required.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check-circle"></i> Save
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger bg-opacity-10 border-danger">
+                <h5 class="modal-title text-danger" id="confirmDeleteLabel">
+                    <i class="bi bi-exclamation-triangle"></i> Confirm Delete
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this schedule:</p>
+                <p class="fw-bold text-danger mb-0" id="deleteLabel"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button id="btnDeleteConfirm" type="button" class="btn btn-danger">
+                    <i class="bi bi-trash"></i> Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    (function () {
+        const state = {
+            page: 1,
+            pageSize: 10,
+            total: 0,
+            course: '',
+            semester: '',
+            day: '',
+            editingId: null,
+            lastDeletedId: null,
+            selectedScheduleId: null,
+            selectedScheduleName: null
+        };
+
+        const els = {
+            tbody: document.getElementById('timetableTbody'),
+            courseFilter: document.getElementById('courseFilter'),
+            semesterFilter: document.getElementById('semesterFilter'),
+            dayFilter: document.getElementById('dayFilter'),
+            pageSize: document.getElementById('pageSize'),
+            pagination: document.getElementById('pagination'),
+            totalCount: document.getElementById('totalCount'),
+            btnRefresh: document.getElementById('btnRefresh'),
+            btnAdd: document.getElementById('btnAdd'),
+            timetableModal: document.getElementById('timetableModal'),
+            timetableForm: document.getElementById('timetableForm'),
+            timetableModalLabel: document.getElementById('timetableModalLabel'),
+            timetableId: document.getElementById('timetableId'),
+            course: document.getElementById('course'),
+            dayOfWeek: document.getElementById('dayOfWeek'),
+            startTime: document.getElementById('startTime'),
+            endTime: document.getElementById('endTime'),
+            room: document.getElementById('room'),
+            semester: document.getElementById('semester'),
+            deleteModal: document.getElementById('confirmDeleteModal'),
+            deleteLabel: document.getElementById('deleteLabel'),
+            btnDeleteConfirm: document.getElementById('btnDeleteConfirm')
+        };
+
+        function escapeHtml(text) {
+            if (!text && text !== 0) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function renderRow(tt) {
+            return `
+                <tr data-id="${tt.id}">
+                    <td><strong>${escapeHtml(tt.courseName)}</strong></td>
+                    <td>${escapeHtml(tt.dayOfWeek)}</td>
+                    <td><small>${tt.startTime} - ${tt.endTime}</small></td>
+                    <td><span class="badge bg-secondary">${escapeHtml(tt.roomName || 'N/A')}</span></td>
+                    <td>${escapeHtml(tt.semester)}</td>
+                    <td class="text-center">
+                        <div class="btn-group btn-group-sm" role="group">
+                            <button class="btn btn-outline-primary btn-edit" title="Edit">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-outline-danger btn-delete" title="Delete">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
+
+        function init() {
+            bindEvents();
+            loadCourses();
+            loadRooms();
+            loadTimetables();
+        }
+
+        function bindEvents() {
+            els.courseFilter.addEventListener('change', () => {
+                state.course = els.courseFilter.value;
+                state.page = 1;
+                loadTimetables();
+            });
+
+            els.semesterFilter.addEventListener('change', () => {
+                state.semester = els.semesterFilter.value;
+                state.page = 1;
+                loadTimetables();
+            });
+
+            els.dayFilter.addEventListener('change', () => {
+                state.day = els.dayFilter.value;
+                state.page = 1;
+                loadTimetables();
+            });
+
+            els.pageSize.addEventListener('change', () => {
+                state.pageSize = parseInt(els.pageSize.value, 10);
+                state.page = 1;
+                loadTimetables();
+            });
+
+            els.btnRefresh.addEventListener('click', () => {
+                state.page = 1;
+                state.course = '';
+                state.semester = '';
+                state.day = '';
+                els.courseFilter.value = '';
+                els.semesterFilter.value = '';
+                els.dayFilter.value = '';
+                loadCourses();
+                loadRooms();
+                loadTimetables();
+            });
+
+            els.tbody.addEventListener('click', (e) => {
+                const btn = e.target.closest('button');
+                if (!btn) return;
+                const tr = btn.closest('tr');
+                if (!tr) return;
+                const id = tr.dataset.id;
+                if (btn.classList.contains('btn-edit')) {
+                    openEdit(id);
+                } else if (btn.classList.contains('btn-delete')) {
+                    openDeleteConfirm(id);
+                }
+            });
+
+            els.btnAdd.addEventListener('click', () => {
+                openAdd();
+            });
+
+            els.timetableForm.addEventListener('submit', async (ev) => {
+                ev.preventDefault();
+                if (!els.timetableForm.checkValidity()) {
+                    els.timetableForm.classList.add('was-validated');
+                    return;
+                }
+                const payload = {
+                    courseId: parseInt(els.course.value, 10),
+                    dayOfWeek: els.dayOfWeek.value,
+                    startTime: els.startTime.value,
+                    endTime: els.endTime.value,
+                    roomId: els.room.value ? parseInt(els.room.value, 10) : null,
+                    semester: els.semester.value
+                };
+
+                if (state.editingId) {
+                    await saveUpdate(state.editingId, payload);
+                } else {
+                    await saveCreate(payload);
+                }
+            });
+
+            els.btnDeleteConfirm.addEventListener('click', async () => {
+                const id = state.lastDeletedId;
+                if (id) {
+                    await deleteTimetable(id);
+                }
+            });
+
+            els.timetableModal.addEventListener('hidden.bs.modal', () => {
+                resetForm();
+            });
+        }
+
+        async function loadCourses() {
+            try {
+                const res = await fetch('/Admin/GetCoursesSimple');
+                if (!res.ok) throw new Error();
+                const data = await res.json();
+                populateCourses(data);
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function populateCourses(list) {
+            els.course.innerHTML = '<option value="">-- Select Course --</option>';
+            els.courseFilter.innerHTML = '<option value="">-- All Courses --</option>';
+            (list || []).forEach(c => {
+                const opt1 = document.createElement('option');
+                opt1.value = c.id;
+                opt1.textContent = c.name;
+                els.course.appendChild(opt1);
+
+                const opt2 = document.createElement('option');
+                opt2.value = c.id;
+                opt2.textContent = c.name;
+                els.courseFilter.appendChild(opt2);
+            });
+        }
+
+        async function loadRooms() {
+            try {
+                const res = await fetch('/Admin/GetRooms');
+                if (!res.ok) throw new Error();
+                const data = await res.json();
+                els.room.innerHTML = '<option value="">-- Select Room --</option>';
+                (data || []).forEach(r => {
+                    const opt = document.createElement('option');
+                    opt.value = r.id;
+                    opt.textContent = r.name;
+                    els.room.appendChild(opt);
+                });
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function loadTimetables() {
+            const q = new URLSearchParams({
+                course: state.course || '',
+                semester: state.semester || '',
+                day: state.day || '',
+                page: state.page,
+                pageSize: state.pageSize
+            });
+            try {
+                const url = `/Admin/GetTimetables?${q.toString()}`;
+                console.log('Fetching:', url);
+                
+                const res = await fetch(url);
+                console.log('Response status:', res.status);
+                
+                if (!res.ok) {
+                    console.error('HTTP Error:', res.status, res.statusText);
+                    throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+                }
+                
+                const result = await res.json();
+                console.log('Result:', result);
+                
+                state.total = result.total || 0;
+                renderTable(result.items || []);
+                renderPagination();
+            } catch (err) {
+                console.error('Error loading timetables:', err);
+                els.tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center text-danger py-5">
+                            <i class="bi bi-exclamation-circle"></i>
+                            <p class="mt-2">Error loading schedules: ${err.message}</p>
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        function renderTable(items) {
+            els.totalCount.textContent = state.total;
+            if (!items || items.length === 0) {
+                els.tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-5">
+                            <i class="bi bi-inbox" style="font-size: 2rem;"></i>
+                            <p class="mt-2">No schedule data</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            els.tbody.innerHTML = items.map(renderRow).join('');
+        }
+
+        function renderPagination() {
+            const totalPages = Math.max(1, Math.ceil(state.total / state.pageSize));
+            const current = Math.min(Math.max(1, state.page), totalPages);
+            const pages = [];
+            const delta = 1;
+            const left = Math.max(1, current - delta);
+            const right = Math.min(totalPages, current + delta);
+
+            if (left > 1) pages.push(1);
+            if (left > 2) pages.push('...');
+            for (let i = left; i <= right; i++) pages.push(i);
+            if (right < totalPages - 1) pages.push('...');
+            if (right < totalPages) pages.push(totalPages);
+
+            els.pagination.innerHTML = '';
+            const addItem = (content, cls, handler) => {
+                const li = document.createElement('li');
+                li.className = 'page-item ' + (cls || '');
+                const a = document.createElement('a');
+                a.className = 'page-link';
+                a.href = '#';
+                a.innerHTML = content;
+                a.addEventListener('click', (e) => { 
+                    e.preventDefault(); 
+                    handler?.();
+                });
+                li.appendChild(a);
+                els.pagination.appendChild(li);
+            };
+
+            addItem('‹ Previous', state.page === 1 ? 'disabled' : '', 
+                () => { if (state.page > 1) { state.page--; loadTimetables(); } });
+            pages.forEach(p => {
+                if (p === '...') {
+                    const li = document.createElement('li');
+                    li.className = 'page-item disabled';
+                    li.innerHTML = '<a class="page-link">…</a>';
+                    els.pagination.appendChild(li);
+                } else {
+                    addItem(p, p === current ? 'active' : '', 
+                        () => { state.page = p; loadTimetables(); });
+                }
+            });
+            addItem('Next ›', state.page === totalPages ? 'disabled' : '', 
+                () => { if (state.page < totalPages) { state.page++; loadTimetables(); } });
+        }
+
+        function openAdd() {
+            state.editingId = null;
+            els.timetableModalLabel.innerHTML = '<i class="bi bi-plus-circle"></i> Add Schedule';
+            resetForm();
+            bootstrap.Modal.getOrCreateInstance(els.timetableModal).show();
+        }
+
+        async function openEdit(id) {
+            try {
+                const res = await fetch(`/Admin/GetTimetable/${id}`);
+                if (!res.ok) throw new Error();
+                const tt = await res.json();
+                state.editingId = id;
+                els.timetableModalLabel.innerHTML = '<i class="bi bi-pencil-square"></i> Edit Schedule';
+                els.timetableId.value = tt.id;
+                els.course.value = tt.courseId;
+                els.dayOfWeek.value = tt.dayOfWeek;
+                els.startTime.value = tt.startTime;
+                els.endTime.value = tt.endTime;
+                els.room.value = tt.roomId || '';
+                els.semester.value = tt.semester;
+                bootstrap.Modal.getOrCreateInstance(els.timetableModal).show();
+            } catch (err) {
+                console.error(err);
+                alert('Failed to load schedule information.');
+            }
+        }
+
+        function openDeleteConfirm(id) {
+            state.lastDeletedId = id;
+            const tr = document.querySelector(`tr[data-id="${id}"]`);
+            const label = tr ? tr.querySelector('td strong').textContent : 'Schedule';
+            els.deleteLabel.textContent = label;
+            bootstrap.Modal.getOrCreateInstance(els.deleteModal).show();
+        }
+
+        async function saveCreate(payload) {
+            try {
+                const res = await fetch('/Admin/CreateTimetable', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (!res.ok) {
+                    alert(`Save failed: ${data.error || 'Unknown error'}\n${data.details || ''}`);
+                    return;
+                }
+                bootstrap.Modal.getOrCreateInstance(els.timetableModal).hide();
+                await loadTimetables();
+            } catch (err) {
+                console.error(err);
+                alert(`Save failed: ${err.message}`);
+            }
+        }
+
+        async function saveUpdate(id, payload) {
+            try {
+                const res = await fetch(`/Admin/UpdateTimetable/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (!res.ok) {
+                    alert(`Update failed: ${data.error || 'Unknown error'}\n${data.details || ''}`);
+                    return;
+                }
+                bootstrap.Modal.getOrCreateInstance(els.timetableModal).hide();
+                await loadTimetables();
+            } catch (err) {
+                console.error(err);
+                alert(`Update failed: ${err.message}`);
+            }
+        }
+
+        async function deleteTimetable(id) {
+            try {
+                const res = await fetch(`/Admin/DeleteTimetable/${id}`, { method: 'DELETE' });
+                const data = await res.json();
+                if (!res.ok) {
+                    alert(`Delete failed: ${data.error || 'Unknown error'}\n${data.details || ''}`);
+                    return;
+                }
+                bootstrap.Modal.getOrCreateInstance(els.deleteModal).hide();
+                state.lastDeletedId = null;
+                await loadTimetables();
+            } catch (err) {
+                console.error(err);
+                alert(`Delete failed: ${err.message}`);
+            }
+        }
+
+        function resetForm() {
+            els.timetableForm.classList.remove('was-validated');
+            state.editingId = null;
+            els.timetableId.value = '';
+            els.course.value = '';
+            els.dayOfWeek.value = '';
+            els.startTime.value = '';
+            els.endTime.value = '';
+            els.room.value = '';
+            els.semester.value = '';
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    })();
+</script>
+}

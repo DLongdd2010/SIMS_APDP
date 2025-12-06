@@ -1,58 +1,72 @@
 ﻿@{
-    ViewData["Title"] = "Home_Admin";
+    ViewData["Title"] = "Admin Dashboard";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="container py-5">
     <!-- Header -->
     <div class="text-center mb-5">
-        <h1 class="display-4 text-danger fw-bold">Trang Quản trị hệ thống</h1>
+        <h1 class="display-4 text-danger fw-bold">Admin Dashboard</h1>
         <div class="alert alert-info shadow-lg mx-auto mt-3" role="alert" style="max-width: 600px;">
             <i class="fas fa-info-circle me-2"></i>
-            Chào mừng Admin! Bạn có toàn quyền quản lý hệ thống.
+            Welcome Admin! You have full system management permissions.
         </div>
     </div>
 
-    <!-- Grid card chức năng -->
+    <!-- Grid card functions -->
     <div class="row g-4 justify-content-center mt-4">
-        <!-- Card 1: Quản lý người dùng -->
+        <!-- Card 1: User Management -->
         <div class="col-12 col-md-6 col-lg-4">
             <div class="card h-100 text-white bg-danger shadow-lg border-0">
                 <div class="card-body text-center d-flex flex-column justify-content-between">
                     <div>
                         <i class="fas fa-users fa-3x mb-3"></i>
-                        <h5 class="card-title fw-bold">Quản lý người dùng</h5>
-                        <p class="card-text">Thêm, sửa, xóa tài khoản</p>
+                        <h5 class="card-title fw-bold">User Management</h5>
+                        <p class="card-text">Add, edit, delete accounts</p>
                     </div>
-                    <a href="/Admin/UserManager" class="btn btn-light mt-3">Xem ngay</a>
+                    <a href="/Admin/UserManager" class="btn btn-light mt-3">View Now</a>
                 </div>
             </div>
         </div>
 
-        <!-- Card 2: Quản lý môn học -->
+        <!-- Card 2: Course Management -->
         <div class="col-12 col-md-6 col-lg-4">
             <div class="card h-100 text-white bg-warning shadow-lg border-0">
                 <div class="card-body text-center d-flex flex-column justify-content-between">
                     <div>
                         <i class="fas fa-book fa-3x mb-3"></i>
-                        <h5 class="card-title fw-bold">Quản lý môn học</h5>
-                        <p class="card-text">Tạo môn mới, phân công giảng viên</p>
+                        <h5 class="card-title fw-bold">Course Management</h5>
+                        <p class="card-text">Create courses, assign instructors</p>
                     </div>
-                    <a href="/Admin/CourseManager" class="btn btn-light mt-3">Xem ngay</a>
+                    <a href="/Admin/CourseManager" class="btn btn-light mt-3">View Now</a>
                 </div>
             </div>
         </div>
 
-        <!-- Card 3: Quản lý phòng học -->
+        <!-- Card 3: Timetable Management -->
         <div class="col-12 col-md-6 col-lg-4">
             <div class="card h-100 text-white bg-success shadow-lg border-0">
                 <div class="card-body text-center d-flex flex-column justify-content-between">
                     <div>
                         <i class="fas fa-chalkboard fa-3x mb-3"></i>
-                        <h5 class="card-title fw-bold">Time table manager</h5>
-                        <p class="card-text">Thêm/sửa thời khóa biểu</p>
+                        <h5 class="card-title fw-bold">Timetable Manager</h5>
+                        <p class="card-text">Add/edit class schedules</p>
                     </div>
-                    <a href="/Admin/TimeTable" class="btn btn-light mt-3">Xem ngay</a>
+                    <a href="/Admin/TimeTable" class="btn btn-light mt-3">View Now</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 4: Student Course Management -->
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card h-100 text-white bg-info shadow-lg border-0">
+                <div class="card-body text-center d-flex flex-column justify-content-between">
+                    <div>
+                        <i class="fas fa-user-graduate fa-3x mb-3"></i>
+                        <h5 class="card-title fw-bold">Student Course Management</h5>
+                        <p class="card-text">Enroll/remove students from courses</p>
+                    </div>
+                    <a href="/Admin/StudentCourseManager" class="btn btn-light mt-3">View Now</a>
                 </div>
             </div>
         </div>
