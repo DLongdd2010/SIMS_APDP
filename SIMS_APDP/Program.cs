@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using SIMS_APDP.Data;
+using SIMS_APDP.Services;
+using SIMS_APDP.Validators;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 
@@ -7,6 +9,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Register Services
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ICourseService, CourseService>();
+builder.Services.AddScoped<ITimetableService, TimetableService>();
+
+// Register Validators
+builder.Services.AddScoped<ICourseValidator, CourseValidator>();
+builder.Services.AddScoped<ITimetableValidator, TimetableValidator>();
 
 // Cookie authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
