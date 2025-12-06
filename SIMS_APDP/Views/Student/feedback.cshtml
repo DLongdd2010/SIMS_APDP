@@ -1,0 +1,55 @@
+﻿@{
+    ViewData["Title"] = "Phản hồi giảng viên";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-10 col-lg-8">
+            <div class="card shadow-lg border-0" style="border-radius:20px;background:rgba(255,255,255,0.98);">
+                <div class="card-body p-5">
+                    <div class="text-center mb-5">
+                        <h1 class="text-success fw-bold" style="font-size:3rem;">
+                            <i class="fas fa-comment-dots me-3"></i>Gửi phản hồi
+                        </h1>
+                        <p class="text-muted fs-5">Góp ý để thầy cô giảng dạy tốt hơn</p>
+                    </div>
+
+                    <form asp-action="SendFeedback" asp-controller="Student" method="post">
+                        <div class="row g-4">
+                            <div class="col-12">
+                                <label class="form-label text-success fw-bold">Chọn môn học</label>
+                                <select class="form-select form-select-lg" name="CourseId" required>
+                                    <option value="">-- Chọn môn học --</option>
+                                    <option value="1">Lập trình Web</option>
+                                    <option value="2">Cơ sở dữ liệu</option>
+                                    <option value="3">Toán rời rạc</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label text-success fw-bold">Nội dung phản hồi</label>
+                                <textarea name="Message" class="form-control form-control-lg" rows="6"
+                                          placeholder="Hãy chia sẻ cảm nhận của bạn về môn học, cách giảng dạy, tài liệu..." required></textarea>
+                            </div>
+
+                            <div class="col-12 text-center mt-4">
+                                <button type="submit" class="btn btn-success btn-lg px-5"
+                                        style="border-radius:50px;font-weight:600;">
+                                    <i class="fas fa-paper-plane me-2"></i>Gửi phản hồi
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div class="mt-5 p-4 bg-light rounded">
+                        <h5 class="text-success"><i class="fas fa-history me-2"></i>Lịch sử phản hồi</h5>
+                        <div class="alert alert-info text-center">
+                            Bạn đã gửi 3 phản hồi trong học kỳ này
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

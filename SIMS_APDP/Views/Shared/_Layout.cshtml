@@ -11,6 +11,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.3.2/mdb.min.css" rel="stylesheet">
 
     <style>
+<<<<<<< HEAD
         :root {
             --primary: #00b894; /* Xanh lá đậm */
             --primary-light: #55efc4;
@@ -63,6 +64,111 @@
                 {
                     <span class="text-white me-3">Xin chào, @User.Identity.Name</span>
                     <a href="/Account/Logout" class="btn btn-outline-light btn-sm">Đăng xuất</a>
+=======
+    :root {
+        --primary: #00b894;
+        --bg-gradient: linear-gradient(135deg, #00b894, #00cec9);
+    }
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: var(--bg-gradient);
+        min-height: 100vh;
+        margin: 0;
+    }
+    .navbar-custom {
+        background: rgba(0, 184, 148, 0.98) !important;
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        box-shadow: 0 4px 30px rgba(0,0,0,0.3);
+    }
+    .navbar-custom .navbar-brand {
+        font-weight: 700;
+        font-size: 1.8rem;
+        color: white !important;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.4);
+        transition: all 0.3s;
+    }
+    .navbar-custom .navbar-brand:hover {
+        transform: scale(1.05);
+    }
+
+    /* DROPDOWN HIỆN GẦN THANH NAVBAR – ĐẸP HOÀN HẢO */
+    .dropdown-menu-right-fix {
+           right: 0 !important;
+        left: auto !important;
+        top: 100% !important;           /* Bắt đầu ngay dưới navbar */
+        margin-top: 2px !important;     /* Chỉ cách 2px – gần nhất có thể */
+        transform: translateX(-10px) !important; /* Đẩy sang trái một chút để không bị cắt */
+        min-width: 220px;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        border: none;
+    }
+
+    @@media (max-width: 768px) {
+        .dropdown-menu-right-fix {
+            right: auto !important;
+            left: 50% !important;
+            transform: translateX(-50%) translateY(5px) !important;
+            margin-top: 5px !important;
+        }
+    }
+</style>>
+</head>
+<body>
+
+    <!-- NAVBAR + DROPDOWN ĐẸP HOÀN HẢO -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom shadow-lg fixed-top">
+        <div class="container-fluid">
+
+            <!-- Logo SIMS - chuyển theo Role -->
+            @{
+                var homeUrl = "/";
+                if (User.Identity.IsAuthenticated)
+                {
+                    var roleIdClaim = User.FindFirst("RoleId")?.Value;
+                    if (int.TryParse(roleIdClaim, out int roleId))
+                    {
+                        homeUrl = roleId switch
+                        {
+                            1 => "/Admin",
+                            2 => "/Teacher",
+                            3 => "/Student",
+                            _ => "/"
+                        };
+                    }
+                }
+            }
+            <a class="navbar-brand" href="@homeUrl">
+                <i class="fas fa-home me-2"></i>SIMS
+            </a>
+
+            <!-- PHẦN BÊN PHẢI: TÊN NGƯỜI DÙNG + DROPDOWN -->
+            <div class="ms-auto d-flex align-items-center gap-3">
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <div class="dropdown">
+                        <a class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+                           id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="cursor:pointer;">
+                            <i class="fas fa-user-circle fa-2x me-2"></i>
+                            <span class="fw-medium">@User.Identity.Name</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-right-fix shadow-lg border-0"
+                            aria-labelledby="userDropdown">
+                            <li>
+                                <a class="dropdown-item" href="@Url.Action("Index", "Account")">
+                                    <i class="fas fa-id-card me-2 text-success"></i>Personal Information
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item text-danger" href="/logout">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+>>>>>>> 774f573 (minh up role student)
                 }
                 else
                 {

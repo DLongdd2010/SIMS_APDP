@@ -9,7 +9,18 @@ namespace SIMS_APDP.Controllers
     {
         public IActionResult Index()
         {
-            return View();
+            // Nếu đã đăng nhập → chuyển về đúng Dashboard theo Role
+            if (User.Identity.IsAuthenticated)
+            {
+                return User.FindFirst("RoleId")?.Value switch
+                {
+                    "1" => RedirectToAction("Index", "Admin"),
+                    "2" => RedirectToAction("Index", "Teacher"),
+                    _ => RedirectToAction("Index", "Student")
+                };
+            }
+
+            return View(); // Chưa đăng nhập → trang chào mừng
         }
 
         public IActionResult Privacy()

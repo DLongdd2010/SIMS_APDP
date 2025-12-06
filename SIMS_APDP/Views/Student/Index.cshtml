@@ -1,4 +1,5 @@
 ﻿@{
+<<<<<<< HEAD
     ViewData["Title"] = "Sinh viên - Trang chủ";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -32,6 +33,69 @@
                 <p class="card-text">Gửi góp ý cho thầy cô</p>
                 <a href="/Student/Feedback" class="btn btn-light">Gửi phản hồi</a>
             </div>
+=======
+    ViewData["Title"] = "Trang chủ Sinh viên";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@inject SIMS_APDP.DesignPatternMinh.State.MenuStateManager MenuState
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 text-success fw-bold">Xin chào, @User.Identity.Name!</h1>
+        <p class="lead">Chọn chức năng bạn muốn sử dụng</p>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+        <!-- Thời khóa biểu -->
+        <div class="col-12 col-md-6 col-lg-4">
+            <a href="@Url.Action("TableTime", "Student")" class="text-decoration-none">
+                <div class="card h-100 text-white @(ViewBag.ActivePage == "TableTime" ? "bg-success" : "bg-primary") shadow-lg border-0 hover-lift">
+                    <div class="card-body text-center">
+                        <i class="fas fa-calendar-alt fa-3x mb-3"></i>
+                        <h5 class="card-title fw-bold">Thời khóa biểu</h5>
+                        <p>Xem lịch học hàng tuần</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Bảng điểm -->
+        <div class="col-12 col-md-6 col-lg-4">
+            <a href="@Url.Action("Transcript", "Student")" class="text-decoration-none">
+                <div class="card h-100 text-white @(ViewBag.ActivePage == "Transcript" ? "bg-success" : "bg-info") shadow-lg border-0 hover-lift">
+                    <div class="card-body text-center">
+                        <i class="fas fa-clipboard-list fa-3x mb-3"></i>
+                        <h5 class="card-title fw-bold">Bảng điểm</h5>
+                        <p>Xem kết quả học tập</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Phản hồi -->
+        <div class="col-12 col-md-6 col-lg-4">
+            <a href="@Url.Action("Feedback", "Student")" class="text-decoration-none">
+                <div class="card h-100 text-white @(ViewBag.ActivePage == "Feedback" ? "bg-success" : "bg-warning") shadow-lg border-0 hover-lift">
+                    <div class="card-body text-center">
+                        <i class="fas fa-comment-dots fa-3x mb-3"></i>
+                        <h5 class="card-title fw-bold">Phản hồi giảng viên</h5>
+                        <p>Gửi góp ý cho thầy cô</p>
+                    </div>
+                </div>
+            </a>
+>>>>>>> 774f573 (minh up role student)
         </div>
     </div>
 </div>
+
+<style>
+    .hover-lift {
+        transition: all 0.3s;
+    }
+
+        .hover-lift:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3) !important;
+        }
+</style>
