@@ -1,0 +1,676 @@
+﻿@{
+    ViewData["Title"] = "Student Course Management";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0">Student Course Management</h1>
+            <small class="text-muted">Manage student enrollments in courses</small>
+        </div>
+        <div>
+            <button id="btnRefresh" class="btn btn-outline-secondary me-2" title="Refresh data">
+                <i class="bi bi-arrow-clockwise"></i> Refresh
+            </button>
+        </div>
+    </div>
+
+    <!-- Step 1: Select Course -->
+    <div class="card mb-4 shadow-sm border-0">
+        <div class="card-header bg-light">
+            <h5 class="mb-0"><span class="badge bg-primary me-2">Step 1</span> Select Course</h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-lg-8">
+                    <label class="form-label">Course <span class="text-danger">*</span></label>
+                    <select id="courseFilter" class="form-select form-select-lg">
+                        <option value="">-- Select a Course --</option>
+                    </select>
+                </div>
+                <div class="col-lg-4">
+                    <label class="form-label">Semester <span class="text-muted">(Optional)</span></label>
+                    <select id="semesterFilter" class="form-select form-select-lg">
+                        <option value="">-- All Semesters --</option>
+                        <option value="Fall">Fall</option>
+                        <option value="Spring">Spring</option>
+                        <option value="Summer">Summer</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 2: View & Manage Students -->
+    <div class="card mb-4 shadow-sm border-0" id="studentsSection" style="display: none;">
+        <div class="card-header bg-light">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><span class="badge bg-primary me-2">Step 2</span> <i class="bi bi-people-fill"></i> Students Enrolled</h5>
+                <div>
+                    <span id="studentCount" class="badge bg-info">0</span>
+                    <span class="text-muted ms-2">/ 30 capacity</span>
+                </div>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width:180px;">Student Name</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th style="width:150px;">Enrolled Date</th>
+                        <th style="width:100px; text-align: center;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="studentsTbody">
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-4">
+                            <i class="bi bi-inbox"></i>
+                            <p class="mt-2">No students enrolled</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <div id="paginationSection" class="d-flex justify-content-between align-items-center mt-4" style="display: none;">
+        <div>
+            <label class="form-label me-2 mb-0">Show</label>
+            <select id="pageSize" class="form-select d-inline-block" style="width:100px">
+                <option value="5">5</option>
+                <option value="10" selected>10</option>
+                <option value="25">25</option>
+            </select>
+            <span class="text-muted ms-2">students / page</span>
+        </div>
+        <nav aria-label="Pagination">
+            <ul id="pagination" class="pagination mb-0"></ul>
+        </nav>
+    </div>
+
+    <!-- Step 3: Enroll New Student Button -->
+    <div id="enrollButtonSection" class="mt-4" style="display: none;">
+        <button id="btnAddStudent" class="btn btn-success btn-lg">
+            <i class="bi bi-person-plus"></i> Enroll New Student to this Course
+        </button>
+    </div>
+</div>
+
+<!-- Enroll Student Modal -->
+<div class="modal fade" id="enrollStudentModal" tabindex="-1" aria-labelledby="enrollStudentLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-success bg-opacity-10 border-success">
+                <h5 class="modal-title text-success" id="enrollStudentLabel">
+                    <i class="bi bi-person-plus-fill"></i> Enroll Student to Course
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info" role="alert">
+                    <i class="bi bi-info-circle"></i> <strong>Course:</strong> <span id="modalCourseInfo">Loading...</span>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label"><strong>Search Student</strong></label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input id="studentSearch" type="search" class="form-control border-start-0" placeholder="Search by name or username..." />
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0 table-sm">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Student Name</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th style="width:100px; text-align: center;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="availableStudentsTbody">
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-4">
+                                    <div class="spinner-border spinner-border-sm" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <p class="mt-2">Loading available students...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <nav aria-label="Available Students Pagination" class="mt-3">
+                    <ul id="availableStudentsPagination" class="pagination pagination-sm mb-0"></ul>
+                </nav>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Remove Confirmation Modal -->
+<div class="modal fade" id="confirmRemoveModal" tabindex="-1" aria-labelledby="confirmRemoveLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger bg-opacity-10 border-danger">
+                <h5 class="modal-title text-danger" id="confirmRemoveLabel">
+                    <i class="bi bi-exclamation-triangle"></i> Confirm Remove Student
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to remove <strong id="removeStudentName"></strong> from this course?</p>
+                <p class="text-muted"><small>This action cannot be undone.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button id="btnConfirmRemove" type="button" class="btn btn-danger">
+                    <i class="bi bi-trash"></i> Remove
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    (function () {
+        const state = {
+            selectedCourseId: null,
+            selectedCourseName: null,
+            selectedSemester: '',
+            studentPage: 1,
+            studentPageSize: 10,
+            studentTotal: 0,
+            availableStudentPage: 1,
+            availableStudentPageSize: 10,
+            lastRemovedStudentId: null,
+            lastRemovedStudentName: null
+        };
+
+        const els = {
+            courseFilter: document.getElementById('courseFilter'),
+            semesterFilter: document.getElementById('semesterFilter'),
+            btnRefresh: document.getElementById('btnRefresh'),
+            studentsSection: document.getElementById('studentsSection'),
+            paginationSection: document.getElementById('paginationSection'),
+            enrollButtonSection: document.getElementById('enrollButtonSection'),
+            studentsTbody: document.getElementById('studentsTbody'),
+            studentCount: document.getElementById('studentCount'),
+            pageSize: document.getElementById('pageSize'),
+            pagination: document.getElementById('pagination'),
+            btnAddStudent: document.getElementById('btnAddStudent'),
+            enrollStudentModal: document.getElementById('enrollStudentModal'),
+            modalCourseInfo: document.getElementById('modalCourseInfo'),
+            studentSearch: document.getElementById('studentSearch'),
+            availableStudentsTbody: document.getElementById('availableStudentsTbody'),
+            availableStudentsPagination: document.getElementById('availableStudentsPagination'),
+            confirmRemoveModal: document.getElementById('confirmRemoveModal'),
+            removeStudentName: document.getElementById('removeStudentName'),
+            btnConfirmRemove: document.getElementById('btnConfirmRemove')
+        };
+
+        function escapeHtml(text) {
+            if (!text && text !== 0) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function init() {
+            bindEvents();
+            loadCourses();
+        }
+
+        function bindEvents() {
+            els.courseFilter.addEventListener('change', () => {
+                const courseId = els.courseFilter.value;
+                if (courseId) {
+                    state.selectedCourseId = parseInt(courseId, 10);
+                    state.selectedCourseName = els.courseFilter.options[els.courseFilter.selectedIndex].text;
+                    state.studentPage = 1;
+                    // Auto-select Fall semester if not specified
+                    if (!state.selectedSemester) {
+                        state.selectedSemester = 'Fall';
+                        els.semesterFilter.value = 'Fall';
+                    }
+                    showStudentsSection();
+                    loadStudentsInCourse();
+                } else {
+                    state.selectedCourseId = null;
+                    state.selectedCourseName = null;
+                    hideStudentsSection();
+                }
+            });
+
+            els.semesterFilter.addEventListener('change', () => {
+                state.selectedSemester = els.semesterFilter.value;
+                if (state.selectedCourseId) {
+                    state.studentPage = 1;
+                    loadStudentsInCourse();
+                }
+            });
+
+            els.pageSize.addEventListener('change', () => {
+                state.studentPageSize = parseInt(els.pageSize.value, 10);
+                state.studentPage = 1;
+                loadStudentsInCourse();
+            });
+
+            els.btnRefresh.addEventListener('click', () => {
+                els.courseFilter.value = '';
+                els.semesterFilter.value = '';
+                state.selectedCourseId = null;
+                state.selectedCourseName = null;
+                state.selectedSemester = '';
+                state.studentPage = 1;
+                hideStudentsSection();
+                loadCourses();
+            });
+
+            els.btnAddStudent.addEventListener('click', () => {
+                state.availableStudentPage = 1;
+                els.studentSearch.value = '';
+                els.modalCourseInfo.textContent = state.selectedCourseName;
+                loadAvailableStudents();
+                bootstrap.Modal.getOrCreateInstance(els.enrollStudentModal).show();
+            });
+
+            let searchTimer;
+            els.studentSearch.addEventListener('input', () => {
+                clearTimeout(searchTimer);
+                searchTimer = setTimeout(() => {
+                    state.availableStudentPage = 1;
+                    loadAvailableStudents();
+                }, 300);
+            });
+
+            els.studentsTbody.addEventListener('click', (e) => {
+                const btn = e.target.closest('button');
+                if (!btn) return;
+                const tr = btn.closest('tr');
+                if (!tr) return;
+                const studentId = parseInt(tr.dataset.studentId, 10);
+                const studentName = tr.querySelector('td strong')?.textContent || 'Student';
+                openRemoveConfirm(studentId, studentName);
+            });
+
+            els.availableStudentsTbody.addEventListener('click', (e) => {
+                const btn = e.target.closest('button');
+                if (!btn || !btn.classList.contains('btn-enroll')) return;
+                const tr = btn.closest('tr');
+                const studentId = parseInt(tr.dataset.studentId, 10);
+                enrollStudent(studentId);
+            });
+
+            els.btnConfirmRemove.addEventListener('click', () => {
+                if (state.lastRemovedStudentId) {
+                    removeStudent(state.lastRemovedStudentId);
+                }
+            });
+
+            els.availableStudentsPagination.addEventListener('click', (e) => {
+                e.preventDefault();
+                const link = e.target.closest('a');
+                if (!link) return;
+                const pageText = link.textContent.trim();
+                if (pageText === '‹ Previous') {
+                    if (state.availableStudentPage > 1) state.availableStudentPage--;
+                } else if (pageText === 'Next ›') {
+                    state.availableStudentPage++;
+                } else if (pageText !== '…') {
+                    state.availableStudentPage = parseInt(pageText, 10);
+                }
+                loadAvailableStudents();
+            });
+
+            els.pagination.addEventListener('click', (e) => {
+                e.preventDefault();
+                const link = e.target.closest('a');
+                if (!link) return;
+                const pageText = link.textContent.trim();
+                if (pageText === '‹ Previous') {
+                    if (state.studentPage > 1) state.studentPage--;
+                } else if (pageText === 'Next ›') {
+                    state.studentPage++;
+                } else if (pageText !== '…') {
+                    state.studentPage = parseInt(pageText, 10);
+                }
+                loadStudentsInCourse();
+            });
+        }
+
+        function showStudentsSection() {
+            els.studentsSection.style.display = 'block';
+            els.paginationSection.style.display = 'flex';
+            els.enrollButtonSection.style.display = 'block';
+        }
+
+        function hideStudentsSection() {
+            els.studentsSection.style.display = 'none';
+            els.paginationSection.style.display = 'none';
+            els.enrollButtonSection.style.display = 'none';
+        }
+
+        async function loadCourses() {
+            try {
+                const res = await fetch('/Admin/GetCoursesSimple');
+                if (!res.ok) throw new Error('Failed to fetch courses');
+                const courses = await res.json();
+                populateCourses(courses);
+            } catch (err) {
+                console.error('Error loading courses:', err);
+                notify(err.message, 'error');
+            }
+        }
+
+        function populateCourses(courses) {
+            els.courseFilter.innerHTML = '<option value="">-- Select a Course --</option>';
+            (courses || []).forEach(course => {
+                const opt = document.createElement('option');
+                opt.value = course.id;
+                opt.textContent = course.name;
+                els.courseFilter.appendChild(opt);
+            });
+        }
+
+        async function loadStudentsInCourse() {
+            if (!state.selectedCourseId) return;
+            const q = new URLSearchParams({
+                courseId: state.selectedCourseId,
+                semester: state.selectedSemester,
+                page: state.studentPage,
+                pageSize: state.studentPageSize
+            });
+            try {
+                const res = await fetch(`/Admin/GetStudentsInCourse?${q.toString()}`);
+                if (!res.ok) throw new Error('Failed to fetch students');
+                const result = await res.json();
+                state.studentTotal = result.total || 0;
+                els.studentCount.textContent = result.currentCount || 0;
+                renderStudentsTable(result.items || []);
+                renderPagination();
+            } catch (err) {
+                console.error('Error loading students:', err);
+                notify(err.message, 'error');
+            }
+        }
+
+        function renderStudentsTable(items) {
+            if (!items || items.length === 0) {
+                els.studentsTbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-4">
+                            <i class="bi bi-inbox"></i>
+                            <p class="mt-2">No students enrolled in this course yet</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            const rows = items.map(student => `
+                <tr data-student-id="${student.userId}">
+                    <td><strong>${escapeHtml(student.studentName)}</strong></td>
+                    <td><small class="text-muted">${escapeHtml(student.username)}</small></td>
+                    <td><small>${escapeHtml(student.email)}</small></td>
+                    <td><small class="text-muted">${student.enrolledDate}</small></td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-outline-danger" title="Remove from course">
+                            <i class="bi bi-trash"></i> Remove
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+            els.studentsTbody.innerHTML = rows;
+        }
+
+        function renderPagination() {
+            const totalPages = Math.max(1, Math.ceil(state.studentTotal / state.studentPageSize));
+            const current = Math.min(Math.max(1, state.studentPage), totalPages);
+            const pages = [];
+            const delta = 1;
+            const left = Math.max(1, current - delta);
+            const right = Math.min(totalPages, current + delta);
+
+            if (left > 1) pages.push(1);
+            if (left > 2) pages.push('...');
+            for (let i = left; i <= right; i++) pages.push(i);
+            if (right < totalPages - 1) pages.push('...');
+            if (right < totalPages) pages.push(totalPages);
+
+            els.pagination.innerHTML = '';
+
+            const addItem = (content, cls, handler) => {
+                const li = document.createElement('li');
+                li.className = 'page-item ' + (cls || '');
+                const a = document.createElement('a');
+                a.className = 'page-link';
+                a.href = '#';
+                a.innerHTML = content;
+                a.addEventListener('click', (e) => { 
+                    e.preventDefault(); 
+                    handler?.();
+                });
+                li.appendChild(a);
+                els.pagination.appendChild(li);
+            };
+
+            addItem('‹ Previous', state.studentPage === 1 ? 'disabled' : '', 
+                () => { if (state.studentPage > 1) { state.studentPage--; loadStudentsInCourse(); } });
+
+            pages.forEach(p => {
+                if (p === '...') {
+                    const li = document.createElement('li');
+                    li.className = 'page-item disabled';
+                    li.innerHTML = '<a class="page-link">…</a>';
+                    els.pagination.appendChild(li);
+                } else {
+                    addItem(p, p === current ? 'active' : '', 
+                        () => { state.studentPage = p; loadStudentsInCourse(); });
+                }
+            });
+
+            addItem('Next ›', state.studentPage === totalPages ? 'disabled' : '', 
+                () => { if (state.studentPage < totalPages) { state.studentPage++; loadStudentsInCourse(); } });
+        }
+
+        async function loadAvailableStudents() {
+            if (!state.selectedCourseId) return;
+            const search = els.studentSearch.value.trim();
+            const q = new URLSearchParams({
+                courseId: state.selectedCourseId,
+                semester: state.selectedSemester,
+                search: search,
+                page: state.availableStudentPage,
+                pageSize: state.availableStudentPageSize
+            });
+            try {
+                const res = await fetch(`/Admin/GetAvailableStudentsForCourse?${q.toString()}`);
+                if (!res.ok) throw new Error('Failed to fetch available students');
+                const result = await res.json();
+                renderAvailableStudentsTable(result.items || []);
+                renderAvailableStudentPagination(result.total || 0);
+            } catch (err) {
+                console.error('Error loading available students:', err);
+                notify(err.message, 'error');
+            }
+        }
+
+        function renderAvailableStudentsTable(items) {
+            if (!items || items.length === 0) {
+                els.availableStudentsTbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="text-center text-muted py-4">
+                            <i class="bi bi-inbox"></i>
+                            <p class="mt-2">No available students to enroll</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            const rows = items.map(student => `
+                <tr data-student-id="${student.id}">
+                    <td><strong>${escapeHtml(student.name)}</strong></td>
+                    <td><small class="text-muted">${escapeHtml(student.username)}</small></td>
+                    <td><small>${escapeHtml(student.email)}</small></td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-success btn-enroll" title="Enroll student">
+                            <i class="bi bi-check-circle"></i> Enroll
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+            els.availableStudentsTbody.innerHTML = rows;
+        }
+
+        function renderAvailableStudentPagination(total) {
+            const totalPages = Math.max(1, Math.ceil(total / state.availableStudentPageSize));
+            const current = Math.min(Math.max(1, state.availableStudentPage), totalPages);
+            const pages = [];
+            const delta = 1;
+            const left = Math.max(1, current - delta);
+            const right = Math.min(totalPages, current + delta);
+
+            if (left > 1) pages.push(1);
+            if (left > 2) pages.push('...');
+            for (let i = left; i <= right; i++) pages.push(i);
+            if (right < totalPages - 1) pages.push('...');
+            if (right < totalPages) pages.push(totalPages);
+
+            els.availableStudentsPagination.innerHTML = '';
+
+            const addItem = (content, cls, handler) => {
+                const li = document.createElement('li');
+                li.className = 'page-item ' + (cls || '');
+                const a = document.createElement('a');
+                a.className = 'page-link';
+                a.href = '#';
+                a.innerHTML = content;
+                a.addEventListener('click', (e) => { 
+                    e.preventDefault(); 
+                    handler?.();
+                });
+                li.appendChild(a);
+                els.availableStudentsPagination.appendChild(li);
+            };
+
+            addItem('‹ Previous', state.availableStudentPage === 1 ? 'disabled' : '', 
+                () => { if (state.availableStudentPage > 1) { state.availableStudentPage--; loadAvailableStudents(); } });
+
+            pages.forEach(p => {
+                if (p === '...') {
+                    const li = document.createElement('li');
+                    li.className = 'page-item disabled';
+                    li.innerHTML = '<a class="page-link">…</a>';
+                    els.availableStudentsPagination.appendChild(li);
+                } else {
+                    addItem(p, p === current ? 'active' : '', 
+                        () => { state.availableStudentPage = p; loadAvailableStudents(); });
+                }
+            });
+
+            addItem('Next ›', state.availableStudentPage === totalPages ? 'disabled' : '', 
+                () => { if (state.availableStudentPage < totalPages) { state.availableStudentPage++; loadAvailableStudents(); } });
+        }
+
+        async function enrollStudent(studentId) {
+            try {
+                const res = await fetch('/Admin/EnrollStudentInCourse', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        courseId: state.selectedCourseId,
+                        studentId: studentId,
+                        semester: state.selectedSemester || 'Fall'
+                    })
+                });
+                const data = await res.json();
+                if (!res.ok) {
+                    throw new Error(data.error || 'Enrollment failed');
+                }
+                notify(data.message || 'Student enrolled successfully!', 'success');
+                state.availableStudentPage = 1;
+                state.studentPage = 1;
+                loadStudentsInCourse();
+                loadAvailableStudents();
+            } catch (err) {
+                console.error('Enrollment error:', err);
+                notify(err.message, 'error');
+            }
+        }
+
+        function openRemoveConfirm(studentId, studentName) {
+            state.lastRemovedStudentId = studentId;
+            state.lastRemovedStudentName = studentName;
+            els.removeStudentName.textContent = studentName;
+            bootstrap.Modal.getOrCreateInstance(els.confirmRemoveModal).show();
+        }
+
+        async function removeStudent(studentId) {
+            try {
+                const res = await fetch(`/Admin/RemoveStudentFromCourse?courseId=${state.selectedCourseId}&studentId=${studentId}&semester=${state.selectedSemester || 'Fall'}`, {
+                    method: 'DELETE'
+                });
+                const data = await res.json();
+                if (!res.ok) {
+                    throw new Error(data.error || 'Removal failed');
+                }
+                notify(data.message || 'Student removed successfully!', 'success');
+                bootstrap.Modal.getInstance(els.confirmRemoveModal).hide();
+                state.studentPage = 1;
+                state.availableStudentPage = 1;
+                loadStudentsInCourse();
+                loadAvailableStudents();
+            } catch (err) {
+                console.error('Removal error:', err);
+                notify(err.message, 'error');
+            }
+        }
+
+        function notify(message, type = 'info') {
+            const bgClass = {
+                success: 'text-bg-success',
+                error: 'text-bg-danger',
+                warning: 'text-bg-warning',
+                info: 'text-bg-info'
+            }[type] || 'text-bg-info';
+
+            const icon = {
+                success: 'bi-check-circle',
+                error: 'bi-x-circle',
+                warning: 'bi-exclamation-triangle',
+                info: 'bi-info-circle'
+            }[type] || 'bi-info-circle';
+
+            const id = `notify-${Date.now()}`;
+            const toast = document.createElement('div');
+            toast.id = id;
+            toast.className = `toast align-items-center ${bgClass} border-0 position-fixed top-0 end-0 m-3`;
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <i class="bi ${icon}"></i> ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            `;
+            document.body.appendChild(toast);
+            const bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
+            toast.addEventListener('hidden.bs.toast', () => {
+                toast.remove();
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    })();
+</script>
+}

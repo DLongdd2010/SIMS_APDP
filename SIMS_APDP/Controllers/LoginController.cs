@@ -19,13 +19,11 @@ namespace SIMS_APDP.Controllers
             _context = context;
         }
 
-        // GET: /Login
         public IActionResult Index()
         {
             return View();
         }
 
-        // POST: /Login
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(string Email, string Password, bool RememberMe = false)
@@ -36,12 +34,10 @@ namespace SIMS_APDP.Controllers
                 return RedirectToAction("Index");
             }
 
-            //// Hash password using same approach as registration
             string hashed = BitConverter
                 .ToString(SHA256.HashData(Encoding.UTF8.GetBytes(Password)))
                 .Replace("-", "");
 
-            // Find user by email
             var user = await _context.Users.Include(u => u.Role)
                 .FirstOrDefaultAsync(u => u.Email == Email);
 
@@ -51,7 +47,6 @@ namespace SIMS_APDP.Controllers
                 return RedirectToAction("Index");
             }
 
-            // Create claims
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.Username ?? user.Email),
@@ -73,28 +68,21 @@ namespace SIMS_APDP.Controllers
             if (RememberMe)
             {
                 authProperties.IsPersistent = true;
-                // Set expiration explicitly when persistent (match cookie options)
                 authProperties.ExpiresUtc = DateTimeOffset.UtcNow.AddDays(7);
             }
             else
             {
-                // Non-persistent: cookie will be a session cookie and removed when browser closes
                 authProperties.IsPersistent = false;
             }
 
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, authProperties);
 
-            // Redirect based on RoleId
-            switch (user.RoleId)
+            return user.RoleId switch
             {
-                case 1:
-                    return RedirectToAction("Index", "Admin");
-                case 2:
-                    return RedirectToAction("Index", "Teacher");
-                case 3:
-                default:
-                    return RedirectToAction("Index", "Student");
-            }
+                1 => RedirectToAction("Index", "Admin"),
+                2 => RedirectToAction("Index", "Teacher"),
+                _ => RedirectToAction("Index", "Student")
+            };
         }
 
         [HttpGet("logout")]
