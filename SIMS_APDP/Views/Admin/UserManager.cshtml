@@ -1,5 +1,796 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model IList<SIMS_APDP.Models.User>
+
+@using SIMS_APDP.Controllers
+
 @{
+    ViewData["Title"] = "User Management";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    
+    var totalUsers = Model?.Count ?? 0;
+    var totalAdmins = Model?.Count(u => u.Role?.RoleName == "Admin" || u.Role?.RoleName == "Administrator") ?? 0;
+    var totalTeachers = Model?.Count(u => u.Role?.RoleName == "Teacher") ?? 0;
+    var totalStudents = Model?.Count(u => u.Role?.RoleName == "Student") ?? 0;
+}
+
+<style>
+    .user-manager-container {
+        animation: fadeIn 0.5s ease-in;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .search-box {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .search-box::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        transition: left 0.5s;
+    }
+
+    .search-box:focus-within::before {
+        left: 100%;
+    }
+
+    .filter-badge {
+        display: inline-block;
+        padding: 6px 12px;
+        margin: 4px 4px 4px 0;
+        background: linear-gradient(135deg, #00b894, #00cec9);
+        color: white;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .filter-badge .badge-close {
+        cursor: pointer;
+        margin-left: 8px;
+        opacity: 0.8;
+        transition: opacity 0.2s;
+    }
+
+    .filter-badge .badge-close:hover {
+        opacity: 1;
+    }
+
+    .user-table thead {
+        background: linear-gradient(135deg, #00b894, #00cec9);
+        color: white;
+    }
+
+    .user-table tbody tr {
+        transition: all 0.3s ease;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .user-table tbody tr:hover {
+        background-color: #f0f9f7;
+        box-shadow: 0 2px 8px rgba(0, 184, 148, 0.15);
+    }
+
+    .badge-role {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .badge-admin {
+        background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+        color: white;
+    }
+
+    .badge-teacher {
+        background: linear-gradient(135deg, #4ecdc4, #44b5ac);
+        color: white;
+    }
+
+    .badge-student {
+        background: linear-gradient(135deg, #95e1d3, #7dd3c0);
+        color: white;
+    }
+
+    .status-active {
+        color: #00b894;
+        font-weight: 600;
+    }
+
+    .status-inactive {
+        color: #d63031;
+        font-weight: 600;
+    }
+
+    .btn-action {
+        padding: 6px 12px;
+        font-size: 0.85rem;
+        border-radius: 6px;
+        margin: 2px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-action:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-edit {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+        border: none;
+    }
+
+    .btn-delete {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        color: white;
+        border: none;
+    }
+
+    .btn-add-user {
+        background: linear-gradient(135deg, #00b894, #00cec9);
+        color: white;
+        border: none;
+        padding: 12px 28px;
+        font-weight: 600;
+        border-radius: 50px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-add-user:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0, 184, 148, 0.4);
+        color: white;
+    }
+
+    .modal-header {
+        background: linear-gradient(135deg, #00b894, #00cec9);
+        color: white;
+    }
+
+    .modal-header .btn-close {
+        filter: brightness(0) invert(1);
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #00b894;
+        box-shadow: 0 0 0 0.2rem rgba(0, 184, 148, 0.25);
+    }
+
+    .stats-box {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        margin-bottom: 20px;
+    }
+
+    .stats-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 184, 148, 0.2);
+    }
+
+    .stats-box-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #00b894, #00cec9);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .stats-box-label {
+        color: #666;
+        font-weight: 500;
+        margin-top: 10px;
+    }
+
+    .pagination-custom {
+        display: flex;
+        justify-content: center;
+        gap: 5px;
+        margin-top: 30px;
+    }
+
+    .pagination-custom .page-link {
+        border: 1px solid #e9ecef;
+        color: #00b894;
+        border-radius: 6px;
+        padding: 8px 12px;
+        transition: all 0.3s;
+    }
+
+    .pagination-custom .page-link:hover {
+        background: linear-gradient(135deg, #00b894, #00cec9);
+        color: white;
+        border-color: #00b894;
+    }
+
+    .pagination-custom .page-item.active .page-link {
+        background: linear-gradient(135deg, #00b894, #00cec9);
+        border-color: #00b894;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+    }
+
+    .empty-state-icon {
+        font-size: 4rem;
+        color: #bdc3c7;
+        margin-bottom: 20px;
+    }
+
+    .empty-state-text {
+        color: #7f8c8d;
+        font-size: 1.1rem;
+        margin-bottom: 20px;
+    }
+
+    .search-results-info {
+        color: #666;
+        font-size: 0.95rem;
+        margin-bottom: 15px;
+    }
+
+    .card-header-custom {
+        background: white;
+        border-bottom: 2px solid #f0f0f0;
+        padding: 20px;
+    }
+
+    .card-header-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin: 0;
+    }
+
+    .btn-reset-filter {
+        padding: 8px 16px;
+        border-radius: 6px;
+        border: 1px solid #ddd;
+        background: white;
+        color: #666;
+        transition: all 0.3s;
+    }
+
+    .btn-reset-filter:hover {
+        background: #f8f9fa;
+        color: #00b894;
+    }
+
+    @@media (max-width: 768px) {
+        .user-table {
+            font-size: 0.9rem;
+        }
+
+        .btn-action {
+            padding: 4px 8px;
+            font-size: 0.75rem;
+        }
+
+        .stats-box-number {
+            font-size: 1.8rem;
+        }
+    }
+</style>
+
+<div class="container-fluid py-4 user-manager-container">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="mb-1" style="font-size: 2rem; font-weight: 700; color: #2c3e50;">
+                        <i class="fas fa-users me-3" style="color: #00b894;"></i>User Management
+                    </h1>
+                    <p class="text-muted mb-0">Manage all user accounts in the system</p>
+                </div>
+                <button class="btn btn-add-user" data-bs-toggle="modal" data-bs-target="#modalAddUser">
+                    <i class="fas fa-plus me-2"></i>Add New User
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="stats-box">
+                <div class="stats-box-number">@totalUsers</div>
+                <div class="stats-box-label">Total Users</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-box">
+                <div class="stats-box-number">@totalAdmins</div>
+                <div class="stats-box-label">Admins</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-box">
+                <div class="stats-box-number">@totalTeachers</div>
+                <div class="stats-box-label">Teachers</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-box">
+                <div class="stats-box-number">@totalStudents</div>
+                <div class="stats-box-label">Students</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search & Filter -->
+    <div class="card shadow-lg border-0 mb-4">
+        <div class="card-header-custom">
+            <h5 class="card-header-title">Search & Filter</h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-3 mb-3">
+                <!-- Search Input -->
+                <div class="col-md-6">
+                    <div class="search-box">
+                        <input type="text" class="form-control form-control-lg" id="searchInput" 
+                               placeholder="Search by name, email or phone number..."
+                               style="border-radius: 8px; border: 2px solid #e9ecef;">
+                    </div>
+                </div>
+
+                <!-- Filter by Role -->
+                <div class="col-md-3">
+                    <select class="form-select form-select-lg" id="filterRole" style="border-radius: 8px; border: 2px solid #e9ecef;">
+                        <option value="">-- All Roles --</option>
+                        <option value="admin">Admin</option>
+                        <option value="teacher">Teacher</option>
+                        <option value="student">Student</option>
+                    </select>
+                </div>
+
+                <!-- Filter by Status -->
+                <div class="col-md-3">
+                    <select class="form-select form-select-lg" id="filterStatus" style="border-radius: 8px; border: 2px solid #e9ecef;">
+                        <option value="">-- All Statuses --</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Active Filters -->
+            <div id="activeFilters" class="mb-2"></div>
+
+            <!-- Filter Actions -->
+            <div class="text-end">
+                <button class="btn btn-reset-filter" onclick="resetFilters()">
+                    <i class="fas fa-times me-2"></i>Clear Filters
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Users Table -->
+    <div class="card shadow-lg border-0">
+        <div class="card-header-custom">
+            <h5 class="card-header-title">User List</h5>
+            <div class="search-results-info" id="resultsInfo">Loading data...</div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover user-table mb-0">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%">ID</th>
+                            <th style="width: 15%">Username</th>
+                            <th style="width: 20%">Full Name</th>
+                            <th style="width: 20%">Email</th>
+                            <th style="width: 10%">Role</th>
+                            <th style="width: 12%">Phone</th>
+                            <th style="width: 10%">Status</th>
+                            <th style="width: 8%">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userTableBody">
+                        @if (Model != null && Model.Count > 0)
+                        {
+                            @foreach (var user in Model)
+                            {
+                                var roleName = user.Role?.RoleName ?? "Unknown";
+                                var normalizedRole = (roleName == "Administrator") ? "Admin" : roleName;
+                                var roleDisplay = normalizedRole == "Admin" ? "Admin" : 
+                                               normalizedRole == "Teacher" ? "Teacher" : 
+                                               normalizedRole == "Student" ? "Student" : normalizedRole;
+                                var badgeClass = normalizedRole == "Admin" ? "badge-admin" : 
+                                              normalizedRole == "Teacher" ? "badge-teacher" : "badge-student";
+                                var phoneDisplay = !string.IsNullOrEmpty(user.PhoneNumber) ? user.PhoneNumber : "N/A";
+                                
+                                <tr>
+                                    <td>@user.UserId</td>
+                                    <td><strong>@user.Username</strong></td>
+                                    <td>@user.FullName</td>
+                                    <td>@user.Email</td>
+                                    <td><span class="badge-role @badgeClass">@roleDisplay</span></td>
+                                    <td>@phoneDisplay</td>
+                                    <td><span class="status-active"><i class="fas fa-check-circle me-1"></i>Active</span></td>
+                                    <td>
+                                        <button class="btn btn-action btn-edit btn-sm" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#modalEditUser"
+                                                onclick="editUser(@user.UserId, '@user.Username', '@user.FullName', '@user.Email', '@phoneDisplay', '@user.Gender', '@user.DateOfBirth.ToString("yyyy-MM-dd")', '@user.Address', '@normalizedRole')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-action btn-delete btn-sm" onclick="deleteUser(@user.UserId, '@user.FullName')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div id="emptyState" class="empty-state @(Model == null || Model.Count == 0 ? "" : "d-none")">
+                <div class="empty-state-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="empty-state-text">No users found in the system</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    @if (Model != null && Model.Count > 10)
+    {
+        <nav aria-label="Page navigation" class="mt-4">
+            <ul class="pagination pagination-custom">
+                <li class="page-item disabled"><a class="page-link" href="#">← Previous</a></li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item"><a class="page-link" href="#">Next →</a></li>
+            </ul>
+        </nav>
+    }
+</div>
+
+<!-- ==================== MODALS ==================== -->
+
+<!-- Modal: Add New User -->
+<div class="modal fade" id="modalAddUser" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-user-plus me-2"></i>Add New User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="formAddUser" method="post" action="/Admin/AddUser">
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <!-- Username -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-600">Username <span class="text-danger">*</span></label>
+                            <input type="text" name="username" class="form-control form-control-lg" placeholder="Enter username" required
+                                   style="border-radius: 8px; border: 2px solid #e9ecef;">
+                        </div>
+
+                        <!-- Role -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-600">Role <span class="text-danger">*</span></label>
+                            <select name="roleId" class="form-select form-select-lg" required style="border-radius: 8px; border: 2px solid #e9ecef;">
+                                <option value="">-- Select Role --</option>
+                                <option value="1">Admin</option>
+                                <option value="2">Teacher</option>
+                                <option value="3">Student</option>
+                            </select>
+                        </div>
+
+                        <!-- Full Name -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-600">Full Name <span class="text-danger">*</span></label>
+                            <input type="text" name="fullName" class="form-control form-control-lg" placeholder="Enter full name" required
+                                   style="border-radius: 8px; border: 2px solid #e9ecef;">
+                        </div>
+
+                        <!-- Email -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-600">Email <span class="text-danger">*</span></label>
+                            <input type="email" name="email" class="form-control form-control-lg" placeholder="Enter email" required
+                                   style="border-radius: 8px; border: 2px solid #e9ecef;">
+                        </div>
+
+                        <!-- Phone Number -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-600">Phone Number</label>
+                            <input type="tel" name="phoneNumber" class="form-control form-control-lg" placeholder="Enter phone number"
+                                   style="border-radius: 8px; border: 2px solid #e9ecef;">
+                        </div>
+
+                        <!-- Gender -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-600">Gender</label>
+                            <select name="gender" class="form-select form-select-lg" style="border-radius: 8px; border: 2px solid #e9ecef;">
+                                <option value="">-- Select Gender --</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+
+                        <!-- Date of Birth -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-600">Date of Birth <span class="text-danger">*</span></label>
+                            <input type="date" name="dateOfBirth" class="form-control form-control-lg" required
+                                   style="border-radius: 8px; border: 2px solid #e9ecef;">
+                        </div>
+
+                        <!-- Address -->
+                        <div class="col-12">
+                            <label class="form-label fw-600">Address <span class="text-danger">*</span></label>
+                            <textarea name="address" class="form-control form-control-lg" rows="2" placeholder="Enter address" required
+                                      style="border-radius: 8px; border: 2px solid #e9ecef;"></textarea>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-600">Password <span class="text-danger">*</span></label>
+                            <input type="password" name="password" class="form-control form-control-lg" placeholder="Enter password" required
+                                   style="border-radius: 8px; border: 2px solid #e9ecef;">
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-600">Confirm Password <span class="text-danger">*</span></label>
+                            <input type="password" name="confirmPassword" class="form-control form-control-lg" placeholder="Confirm password" required
+                                   style="border-radius: 8px; border: 2px solid #e9ecef;">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-add-user">
+                        <i class="fas fa-save me-2"></i>Add User
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Edit User -->
+<div class="modal fade" id="modalEditUser" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-user-edit me-2"></i>Edit User Information</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="formEditUser" method="post" action="/Admin/UpdateUser">
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <!-- ID (Read-only) -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-600">ID</label>
+                            <input type="text" id="editUserId" readonly disabled
+                                   style="border-radius: 8px; background-color: #f8f9fa;" class="form-control form-control-lg">
+                        </div>
+
+                        <!-- Username (Read-only) -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-600">Username</label>
+                            <input type="text" id="editUsername" readonly disabled
+                                   style="border-radius: 8px; background-color: #f8f9fa;" class="form-control form-control-lg">
+                        </div>
+
+                        <!-- Full Name -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-600">Full Name <span class="text-danger">*</span></label>
+                            <input type="text" id="editFullName" name="fullName" class="form-control form-control-lg" required
+                                   style="border-radius: 8px; border: 2px solid #e9ecef;">
+                        </div>
+
+                        <!-- Email -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-600">Email <span class="text-danger">*</span></label>
+                            <input type="email" id="editEmail" name="email" class="form-control form-control-lg" required
+                                   style="border-radius: 8px; border: 2px solid #e9ecef;">
+                        </div>
+
+                        <!-- Phone Number -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-600">Phone Number</label>
+                            <input type="tel" id="editPhoneNumber" name="phoneNumber" class="form-control form-control-lg"
+                                   style="border-radius: 8px; border: 2px solid #e9ecef;">
+                        </div>
+
+                        <!-- Gender -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-600">Gender</label>
+                            <select id="editGender" name="gender" class="form-select form-select-lg" style="border-radius: 8px; border: 2px solid #e9ecef;">
+                                <option value="">-- Select Gender --</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+
+                        <!-- Date of Birth -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-600">Date of Birth <span class="text-danger">*</span></label>
+                            <input type="date" id="editDateOfBirth" name="dateOfBirth" class="form-control form-control-lg" required
+                                   style="border-radius: 8px; border: 2px solid #e9ecef;">
+                        </div>
+
+                        <!-- Role -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-600">Role <span class="text-danger">*</span></label>
+                            <select id="editRole" name="roleId" class="form-select form-select-lg" required style="border-radius: 8px; border: 2px solid #e9ecef;">
+                                <option value="">-- Select Role --</option>
+                                <option value="1">Admin</option>
+                                <option value="2">Teacher</option>
+                                <option value="3">Student</option>
+                            </select>
+                        </div>
+
+                        <!-- Address -->
+                        <div class="col-12">
+                            <label class="form-label fw-600">Address <span class="text-danger">*</span></label>
+                            <textarea id="editAddress" name="address" class="form-control form-control-lg" rows="2" required
+                                      style="border-radius: 8px; border: 2px solid #e9ecef;"></textarea>
+                        </div>
+
+                        <!-- User ID hidden field -->
+                        <input type="hidden" id="editUserIdHidden" name="userId">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-add-user">
+                        <i class="fas fa-save me-2"></i>Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function getRoleName(roleId) {
+            const roles = { '1': 'Admin', '2': 'Teacher', '3': 'Student' };
+            return roles[roleId] || 'Unknown';
+        }
+
+        // Edit User
+        function editUser(userId, username, fullName, email, phoneNumber, gender, dateOfBirth, address, roleId) {
+            document.getElementById('editUserId').value = userId;
+            document.getElementById('editUsername').value = username;
+            document.getElementById('editFullName').value = fullName;
+            document.getElementById('editEmail').value = email;
+            document.getElementById('editPhoneNumber').value = phoneNumber;
+            document.getElementById('editGender').value = gender || '';
+            document.getElementById('editDateOfBirth').value = dateOfBirth;
+            document.getElementById('editAddress').value = address;
+            document.getElementById('editRole').value = roleId === 'Admin' ? '1' : roleId === 'Teacher' ? '2' : '3';
+            document.getElementById('editUserIdHidden').value = userId;
+        }
+
+        // Delete User
+        function deleteUser(id, name) {
+            if (confirm(`Are you sure you want to delete the user "${name}"?`)) {
+                fetch(`/Admin/DeleteUser?id=${id}`, { method: 'POST' })
+                    .then(response => {
+                        if (response.ok) {
+                            alert('User deleted successfully!');
+                            location.reload();
+                        } else {
+                            alert('Error deleting user!');
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+        }
+
+        // Filter Users
+        function applyFilters() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const roleFilter = document.getElementById('filterRole').value.toLowerCase();
+            const statusFilter = document.getElementById('filterStatus').value;
+
+            const rows = document.querySelectorAll('#userTableBody tr');
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                if (row.cells.length === 0) return;
+                
+                const username = row.cells[1].textContent.toLowerCase();
+                const fullName = row.cells[2].textContent.toLowerCase();
+                const email = row.cells[3].textContent.toLowerCase();
+                const phone = row.cells[5].textContent.toLowerCase();
+                const role = row.cells[4].textContent.toLowerCase();
+
+                const matchSearch = search === '' || 
+                    username.includes(search) || 
+                    fullName.includes(search) || 
+                    email.includes(search) || 
+                    phone.includes(search);
+
+                const matchRole = roleFilter === '' || role.includes(roleFilter);
+                const matchStatus = statusFilter === '' || statusFilter === 'active';
+
+                if (matchSearch && matchRole && matchStatus) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            updateResultsInfo(visibleCount);
+            toggleEmptyState(visibleCount === 0);
+        }
+
+        function updateResultsInfo(visible) {
+            const info = document.getElementById('resultsInfo');
+            const total = document.querySelectorAll('#userTableBody tr').length;
+            info.textContent = visible === 0 ? 'No results found' : `Showing ${visible} out of ${total} users`;
+        }
+
+        function toggleEmptyState(show) {
+            const table = document.querySelector('.table-responsive');
+            const empty = document.getElementById('emptyState');
+            
+            if (show) {
+                table.classList.add('d-none');
+                empty.classList.remove('d-none');
+            } else {
+                table.classList.remove('d-none');
+                empty.classList.add('d-none');
+            }
+        }
+
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('filterRole').value = '';
+            document.getElementById('filterStatus').value = '';
+            applyFilters();
+        }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('keyup', applyFilters);
+        document.getElementById('filterRole').addEventListener('change', applyFilters);
+        document.getElementById('filterStatus').addEventListener('change', applyFilters);
+
+        document.getElementById('formAddUser').addEventListener('submit', function(e) {
+            const pwd = document.querySelector('input[name="password"]').value;
+            const confirmPwd = document.querySelector('input[name="confirmPassword"]').value;
+            if (pwd !== confirmPwd) {
+                e.preventDefault();
+                alert('Passwords do not match!');
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            applyFilters();
+        });
+    </script>
 }
