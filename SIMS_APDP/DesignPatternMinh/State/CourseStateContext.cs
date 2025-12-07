@@ -16,6 +16,6 @@
 
         public string Status => State.GetStatus();
         public string Badge => State.GetBadgeClass();
-        public bool CanRetake => State.CanRetake();
+
     }
 }

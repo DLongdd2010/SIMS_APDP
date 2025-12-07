@@ -2,7 +2,7 @@
 
 public class PassedState : ICourseState
 {
-    public string GetStatus() => "Đạt";
+    public string GetStatus() => "Pass";
     public string GetBadgeClass() => "bg-success";
-    public bool CanRetake() => false;
+
 }
