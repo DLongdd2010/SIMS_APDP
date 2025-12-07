@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace SIMS_APDP.Services
 {
+    /// <summary>
+    /// Course Service Implementation - CRUD operations and student enrollment
+    /// </summary>
     public class CourseService : ICourseService
     {
         private readonly ApplicationDbContext _context;
@@ -14,24 +17,26 @@ namespace SIMS_APDP.Services
             _context = context;
         }
 
+        // Get courses without pagination
         public IEnumerable<dynamic> GetCourses(string search = "", int page = 1, int pageSize = 10, string sort = "name_asc")
         {
             var (_, items) = GetCoursesWithPagination(search, page, pageSize, sort);
             return items;
         }
 
+        // Get courses with pagination, search, and sort
         public (int Total, List<dynamic> Items) GetCoursesWithPagination(string search = "", int page = 1, int pageSize = 10, string sort = "name_asc")
         {
             var query = _context.Courses.Include(c => c.Teacher).AsQueryable();
 
-            // Search
+            // Apply search filter
             if (!string.IsNullOrWhiteSpace(search))
             {
                 var searchTerm = search.ToLower();
                 query = query.Where(c => c.CourseName.ToLower().Contains(searchTerm));
             }
 
-            // Sort
+            // Apply sort
             query = sort switch
             {
                 "name_desc" => query.OrderByDescending(c => c.CourseName),
@@ -62,23 +67,27 @@ namespace SIMS_APDP.Services
             return (total, items);
         }
 
+        // Get single course by ID
         public Course GetCourseById(int courseId)
         {
             return _context.Courses.Find(courseId);
         }
 
+        // Add new course
         public void AddCourse(Course course)
         {
             _context.Courses.Add(course);
             _context.SaveChanges();
         }
 
+        // Update existing course
         public void UpdateCourse(Course course)
         {
             _context.Courses.Update(course);
             _context.SaveChanges();
         }
 
+        // Delete course by ID
         public void DeleteCourse(int courseId)
         {
             var course = _context.Courses.Find(courseId);
@@ -89,11 +98,13 @@ namespace SIMS_APDP.Services
             }
         }
 
+        // Check if course exists
         public bool CourseExists(int courseId)
         {
             return _context.Courses.Any(c => c.CourseId == courseId);
         }
 
+        // Get all departments (teachers)
         public IEnumerable<dynamic> GetDepartments()
         {
             return _context.Users
@@ -104,6 +115,7 @@ namespace SIMS_APDP.Services
                 .ToList();
         }
 
+        // Get all courses with minimal data (for dropdowns)
         public IEnumerable<dynamic> GetCoursesSimple()
         {
             return _context.Courses
@@ -112,6 +124,7 @@ namespace SIMS_APDP.Services
                 .ToList();
         }
 
+        // Get count of students enrolled in a course
         public int GetStudentCountInCourse(int courseId, string semester = "")
         {
             var query = _context.StudentCourses.Where(sc => sc.CourseId == courseId);
@@ -122,6 +135,7 @@ namespace SIMS_APDP.Services
             return query.Count();
         }
 
+        // Get paginated list of students in a course
         public (int Total, List<dynamic> Items) GetStudentsInCourse(int courseId, string semester = "", int page = 1, int pageSize = 10)
         {
             var query = _context.StudentCourses
@@ -155,6 +169,7 @@ namespace SIMS_APDP.Services
             return (total, items);
         }
 
+        // Enroll student in course (with validation)
         public void EnrollStudentInCourse(int userId, int courseId, string semester)
         {
             if (IsStudentEnrolled(userId, courseId, semester))
@@ -179,6 +194,7 @@ namespace SIMS_APDP.Services
             _context.SaveChanges();
         }
 
+        // Remove student from course
         public void RemoveStudentFromCourse(int userId, int courseId, string semester)
         {
             var studentCourse = _context.StudentCourses
@@ -191,12 +207,14 @@ namespace SIMS_APDP.Services
             }
         }
 
+        // Check if student is already enrolled in course
         public bool IsStudentEnrolled(int userId, int courseId, string semester)
         {
             return _context.StudentCourses
                 .Any(sc => sc.UserId == userId && sc.CourseId == courseId && sc.Semester == semester);
         }
 
+        // Check if course has space for new student
         public bool CanEnrollStudent(int courseId, string semester)
         {
             var currentCount = GetStudentCountInCourse(courseId, semester);

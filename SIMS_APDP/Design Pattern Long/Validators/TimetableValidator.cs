@@ -3,6 +3,9 @@ using SIMS_APDP.Services;
 
 namespace SIMS_APDP.Validators
 {
+    /// <summary>
+    /// Timetable Validator Implementation - validates timetable data before saving
+    /// </summary>
     public class TimetableValidator : ITimetableValidator
     {
         private readonly ApplicationDbContext _context;
@@ -16,6 +19,7 @@ namespace SIMS_APDP.Validators
             _courseService = courseService;
         }
 
+        // Validate day is one of the valid days
         public (bool IsValid, string ErrorMessage) ValidateDayOfWeek(string dayOfWeek)
         {
             if (string.IsNullOrWhiteSpace(dayOfWeek))
@@ -28,6 +32,7 @@ namespace SIMS_APDP.Validators
             return (true, "");
         }
 
+        // Validate time format (HH:mm) and start < end
         public (bool IsValid, string ErrorMessage) ValidateTime(string startTime, string endTime)
         {
             if (string.IsNullOrWhiteSpace(startTime) || string.IsNullOrWhiteSpace(endTime))
@@ -45,6 +50,7 @@ namespace SIMS_APDP.Validators
             return (true, "");
         }
 
+        // Validate course ID is valid and exists
         public (bool IsValid, string ErrorMessage) ValidateCourseId(int courseId)
         {
             if (courseId <= 0)
@@ -56,6 +62,7 @@ namespace SIMS_APDP.Validators
             return (true, "");
         }
 
+        // Validate room exists (optional field, can be null)
         public (bool IsValid, string ErrorMessage) ValidateRoomId(int? roomId)
         {
             if (!roomId.HasValue || roomId.Value <= 0)
@@ -68,6 +75,7 @@ namespace SIMS_APDP.Validators
             return (true, "");
         }
 
+        // Validate semester is not empty
         public (bool IsValid, string ErrorMessage) ValidateSemester(string semester)
         {
             if (string.IsNullOrWhiteSpace(semester))
@@ -76,8 +84,10 @@ namespace SIMS_APDP.Validators
             return (true, "");
         }
 
+        // Validate no scheduling conflict for room at same time
         public (bool IsValid, string ErrorMessage) ValidateConflict(int? roomId, string day, TimeSpan start, TimeSpan end, string semester, int? excludeId)
         {
+            // Room is optional, skip conflict check if not provided
             if (!roomId.HasValue || roomId.Value <= 0)
                 return (true, "");
 

@@ -4,19 +4,20 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SIMS_APDP.Data;
 using SIMS_APDP.Models;
+using SIMS_APDP.Services;
 using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace SIMS_APDP.Controllers
 {
     public class LoginController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IUserService _userService;
 
-        public LoginController(ApplicationDbContext context)
+        public LoginController(ApplicationDbContext context, IUserService userService)
         {
             _context = context;
+            _userService = userService;
         }
 
         // GET: /Login
@@ -36,10 +37,8 @@ namespace SIMS_APDP.Controllers
                 return RedirectToAction("Index");
             }
 
-            //// Hash password using same approach as registration
-            string hashed = BitConverter
-                .ToString(SHA256.HashData(Encoding.UTF8.GetBytes(Password)))
-                .Replace("-", "");
+            // Hash password using UserService (consistent hashing method)
+            string hashed = _userService.HashPassword(Password);
 
             // Find user by email
             var user = await _context.Users.Include(u => u.Role)

@@ -4,21 +4,23 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SIMS_APDP.Data;
+using SIMS_APDP.Services;
 using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace SIMS_APDP.Controllers
 {
-    [Authorize] // bắt buộc phải login mới vào được
+    [Authorize]
     public class AccountController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IUserService _userService;
 
-        public AccountController(ApplicationDbContext context)
+        public AccountController(ApplicationDbContext context, IUserService userService)
         {
             _context = context;
+            _userService = userService;
         }
+
         public async Task<IActionResult> Profile()
         {
             var userIdClaim = User.FindFirst("UserId")?.Value;
@@ -87,9 +89,8 @@ namespace SIMS_APDP.Controllers
                 return RedirectToAction("Logout", "Login");
             }
 
-            // Kiểm tra mật khẩu hiện tại (so sánh hash)
-            string currentHashed = BitConverter.ToString(SHA256.HashData(Encoding.UTF8.GetBytes(currentPassword)))
-                                             .Replace("-", "");
+            // Kiểm tra mật khẩu hiện tại (sử dụng IUserService để hash nhất quán)
+            string currentHashed = _userService.HashPassword(currentPassword);
 
             if (user.Password != currentHashed)
             {
@@ -97,9 +98,8 @@ namespace SIMS_APDP.Controllers
                 return View("~/Views/Account/ChangePassword.cshtml");
             }
 
-            // Hash mật khẩu mới
-            string newHashed = BitConverter.ToString(SHA256.HashData(Encoding.UTF8.GetBytes(newPassword)))
-                                           .Replace("-", "");
+            // Hash mật khẩu mới (sử dụng IUserService để hash nhất quán)
+            string newHashed = _userService.HashPassword(newPassword);
 
             // CẬP NHẬT THẬT VÀO DATABASE
             user.Password = newHashed;
