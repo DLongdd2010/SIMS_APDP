@@ -2,18 +2,19 @@
 using Microsoft.EntityFrameworkCore;
 using SIMS_APDP.Data;
 using SIMS_APDP.Models;
-using System.Security.Cryptography;
-using System.Text;
+using SIMS_APDP.Services;
 
 namespace SIMS_APDP.Controllers
 {
     public class RegisterController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IUserService _userService;
 
-        public RegisterController(ApplicationDbContext context)
+        public RegisterController(ApplicationDbContext context, IUserService userService)
         {
             _context = context;
+            _userService = userService;
         }
 
         // GET: /Register
@@ -27,15 +28,14 @@ namespace SIMS_APDP.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(User model)
         {
-            // --- BƯỚC 1: LOẠI BỎ VALIDATION CHO CÁC TRƯỜNG TỰ ĐỘNG GÁN ---
+            // Remove validation for auto-assigned fields
             ModelState.Remove("RoleId");
             ModelState.Remove("Role");
             ModelState.Remove("StudentCourses");
 
-            // --- BƯỚC 2: KIỂM TRA MODEL TỪ HTML ---
             if (!ModelState.IsValid)
             {
-                foreach (var modelState in ModelState.Values) 
+                foreach (var modelState in ModelState.Values)
                 {
                     foreach (var error in modelState.Errors)
                     {
@@ -45,42 +45,32 @@ namespace SIMS_APDP.Controllers
                 return View(model);
             }
 
-            // --- BƯỚC 2: KIỂM TRA USERNAME ĐÃ TỒN TẠI ---
-            bool usernameExists = await _context.Users
-                .AnyAsync(u => u.Username == model.Username);
-
-            if (usernameExists)
+            // Check if username already exists
+            if (_userService.UsernameExists(model.Username))
             {
                 ModelState.AddModelError("Username", "Tên đăng nhập đã tồn tại!");
                 return View(model);
             }
 
-            // --- BƯỚC 3: KIỂM TRA EMAIL ĐÃ TỒN TẠI ---
-            bool emailExists = await _context.Users
-                .AnyAsync(u => u.Email == model.Email);
-
-            if (emailExists)
+            // Check if email already exists
+            if (_userService.EmailExists(model.Email))
             {
                 ModelState.AddModelError("Email", "Email này đã được đăng ký!");
                 return View(model);
             }
 
-            // --- BƯỚC 4: MÃ HÓA MẬT KHẨU ---
-            model.Password = BitConverter
-                .ToString(SHA256.HashData(Encoding.UTF8.GetBytes(model.Password)))
-                .Replace("-", "");
+            // Hash password using UserService (consistent hashing method)
+            model.Password = _userService.HashPassword(model.Password);
 
-            // --- BƯỚC 5: GÁN ROLE SINH VIÊN ---
+            // Assign student role
             model.RoleId = 3;
 
-            // --- BƯỚC 6: LƯU DB ---
+            // Save to database
             _context.Users.Add(model);
             await _context.SaveChangesAsync();
 
-            // --- BƯỚC 7: BÁO THÀNH CÔNG ---
             TempData["Success"] = "Đăng ký thành công! Bạn đã là Sinh viên SIMS.";
 
-            // --- BƯỚC 8: CHUYỂN TRANG ---
             return RedirectToAction("Index", "Login");
         }
     }

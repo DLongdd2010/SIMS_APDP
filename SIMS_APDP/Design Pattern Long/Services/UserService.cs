@@ -73,14 +73,12 @@ namespace SIMS_APDP.Services
             return _context.Users.Any(u => u.Email == email);
         }
 
-        // Hash password using SHA256
+        // Hash password using SHA256 (hex format without hyphens) - consistent with Login/Register
         public string HashPassword(string password)
         {
-            using (var sha256 = SHA256.Create())
-            {
-                var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-                return Convert.ToBase64String(hashedBytes);
-            }
+            return BitConverter
+                .ToString(SHA256.HashData(Encoding.UTF8.GetBytes(password)))
+                .Replace("-", "");
         }
     }
 }

@@ -101,6 +101,11 @@
         color: white;
     }
 
+    .badge-student {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+    }
+
     .status-active {
         color: #00b894;
         font-weight: 600;
@@ -326,6 +331,12 @@
                 <div class="stats-box-label">Teachers</div>
             </div>
         </div>
+        <div class="col-md-4 mt-3">
+            <div class="stats-box">
+                <div class="stats-box-number">@(Model?.Count(u => u.Role?.RoleName == "Student") ?? 0)</div>
+                <div class="stats-box-label">Students</div>
+            </div>
+        </div>
     </div>
 
     <!-- Search & Filter -->
@@ -350,6 +361,7 @@
                         <option value="">-- All Roles --</option>
                         <option value="admin">Admin</option>
                         <option value="teacher">Teacher</option>
+                        <option value="student">Student</option>
                     </select>
                 </div>
 
@@ -404,8 +416,10 @@
                                 var roleName = user.Role?.RoleName ?? "Unknown";
                                 var normalizedRole = (roleName == "Administrator") ? "Admin" : roleName;
                                 var roleDisplay = normalizedRole == "Admin" ? "Admin" : 
-                                               normalizedRole == "Teacher" ? "Teacher" : normalizedRole;
-                                var badgeClass = normalizedRole == "Admin" ? "badge-admin" : "badge-teacher";
+                                               normalizedRole == "Teacher" ? "Teacher" : 
+                                               normalizedRole == "Student" ? "Student" : normalizedRole;
+                                var badgeClass = normalizedRole == "Admin" ? "badge-admin" : 
+                                              normalizedRole == "Teacher" ? "badge-teacher" : "badge-student";
                                 var phoneDisplay = !string.IsNullOrEmpty(user.PhoneNumber) ? user.PhoneNumber : "N/A";
                                 
                                 <tr>
@@ -484,6 +498,7 @@
                                 <option value="">-- Select Role --</option>
                                 <option value="1">Admin</option>
                                 <option value="2">Teacher</option>
+                                <option value="3">Student</option>
                             </select>
                         </div>
 
@@ -630,6 +645,7 @@
                                 <option value="">-- Select Role --</option>
                                 <option value="1">Admin</option>
                                 <option value="2">Teacher</option>
+                                <option value="3">Student</option>
                             </select>
                         </div>
 
@@ -658,7 +674,7 @@
 @section Scripts {
     <script>
         function getRoleName(roleId) {
-            const roles = { '1': 'Admin', '2': 'Teacher' };
+            const roles = { '1': 'Admin', '2': 'Teacher', '3': 'Student' };
             return roles[roleId] || 'Unknown';
         }
 
@@ -672,7 +688,14 @@
             document.getElementById('editGender').value = gender || '';
             document.getElementById('editDateOfBirth').value = dateOfBirth;
             document.getElementById('editAddress').value = address;
-            document.getElementById('editRole').value = roleId === 'Admin' ? '1' : '2';
+            
+            let roleValue = '1'; // Default Admin
+            if (roleId === 'Teacher') {
+                roleValue = '2';
+            } else if (roleId === 'Student') {
+                roleValue = '3';
+            }
+            document.getElementById('editRole').value = roleValue;
             document.getElementById('editUserIdHidden').value = userId;
         }
 
@@ -834,5 +857,4 @@
             }
         });
     </script>
-}
 }
