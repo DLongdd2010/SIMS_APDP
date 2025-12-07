@@ -1,0 +1,117 @@
+﻿@{
+    ViewData["Title"] = "Danh sách lớp & Chấm điểm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model List<SIMS_APDP.Models.Course>
+@{
+    var allGrades = ViewBag.Grades as List<SIMS_APDP.Models.GradesProfile> ?? new List<SIMS_APDP.Models.GradesProfile>();
+}
+
+<div class="container py-5">
+    <h2 class="text-center mb-5 text-primary fw-bold">Danh Sách Lớp & Chấm Điểm Sinh Viên</h2>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center">
+            <i class="fas fa-info-circle fa-3x mb-3"></i>
+            <p>Bạn chưa được phân công lớp học nào.</p>
+        </div>
+    }
+    else
+    {
+        foreach (var course in Model)
+        {
+            <div class="card mb-5 shadow-lg border-0">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-book"></i> @course.CourseName (@course.CourseId)
+                    </h4>
+                    <span class="badge bg-light text-dark fs-6">@course.Credits tín chỉ</span>
+                </div>
+                <div class="card-body">
+                    @if (!course.StudentCourses.Any())
+                    {
+                        <p class="text-muted">Chưa có sinh viên đăng ký môn này.</p>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>STT</th>
+                                        <th>MSSV</th>
+                                        <th>Họ tên</th>
+                                        <th>Học kỳ</th>
+                                        <th>Điểm (0-10)</th>
+                                        <th>Kết quả</th>
+                                        <th>Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        int stt = 1;
+                                    }
+                                    @foreach (var sc in course.StudentCourses)
+                                    {
+                                        var gradeProfile = allGrades
+                                        .FirstOrDefault(g => g.UserId == sc.UserId &&
+                                        g.CourseId == course.CourseId &&
+                                        g.Semester == sc.Semester);
+
+                                        var currentGrade = gradeProfile?.Grade;
+
+                                        <tr>
+                                            <td>@stt</td>
+                                            <td>@sc.User?.Username</td>
+                                            <td>@sc.User?.FullName</td>
+                                            <td>@sc.Semester</td>
+                                            <td>
+                                                <form asp-action="UpdateGrade" method="post" class="d-flex gap-2">
+                                                    <input type="hidden" name="userId" value="@sc.UserId" />
+                                                    <input type="hidden" name="courseId" value="@course.CourseId" />
+                                                    <input type="hidden" name="semester" value="@sc.Semester" />
+                                                    <input type="number" name="grade" step="0.1" min="0" max="10"
+                                                           class="form-control form-control-sm" style="width: 100px;"
+                                                           value="@currentGrade" />
+                                                    <button type="submit" class="btn btn-success btn-sm">
+                                                        <i class="fas fa-save"></i>
+                                                    </button>
+                                                </form>
+                                            </td>
+                                            <td>
+                                                @if (currentGrade == null)
+                                                {
+                                                    <span class="badge bg-secondary">Chưa chấm</span>
+                                                }
+                                                else if (currentGrade >= 4)
+                                                {
+                                                    <span class="badge bg-success">Đạt</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-danger">Chưa đạt</span>
+                                                }
+                                        </td>
+                                        <td>
+                                            <small class="text-muted">
+                                                @(
+                                                                                    gradeProfile == null
+                                                                                    || gradeProfile.UpdatedAt == default(DateTime)
+                                                                                    ? "-"
+                                                                                    : gradeProfile.UpdatedAt.ToString("dd/MM HH:mm")
+                                                                                    )
+                                                </small>
+                                            </td>
+                                        </tr>
+                                        stt++;
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    }
+</div>
