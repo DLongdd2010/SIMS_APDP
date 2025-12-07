@@ -1,17 +1,17 @@
 ﻿@{
-    ViewData["Title"] = "Lịch giảng dạy";
+    ViewData["Title"] = "Teaching Schedule";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 @model List<SIMS_APDP.Models.Timetable>
 
 <div class="container py-5">
-    <h2 class="text-center mb-5 text-info fw-bold">Thời Khóa Biểu Giảng Dạy</h2>
+    <h2 class="text-center mb-5 text-info fw-bold">Teaching Timetable</h2>
 
     @if (!Model.Any())
     {
         <div class="alert alert-warning text-center">
             <i class="fas fa-calendar-times fa-3x mb-3"></i>
-            <p>Chưa có lịch giảng dạy nào được xếp.</p>
+            <p>No teaching schedule has been arranged.</p>
         </div>
     }
     else
@@ -20,11 +20,11 @@
             <table class="table table-bordered table-hover align-middle">
                 <thead class="table-primary">
                     <tr>
-                        <th>Thứ</th>
-                        <th>Môn học</th>
-                        <th>Thời gian</th>
-                        <th>Phòng</th>
-                        <th>Học kỳ</th>
+                        <th>Day</th>
+                        <th>Course</th>
+                        <th>Time</th>
+                        <th>Room</th>
+                        <th>Semester</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -34,7 +34,7 @@
                             <td class="fw-bold">@t.DayOfWeek</td>
                             <td>@t.Course?.CourseName</td>
                             <td>@t.StartTime.ToString(@"hh\:mm") - @t.EndTime.ToString(@"hh\:mm")</td>
-                            <td>@(t.Room?.RoomName ?? "Chưa xếp phòng")</td>
+                            <td>@(t.Room?.RoomName ?? "Not assigned")</td>
                             <td>@t.Semester</td>
                         </tr>
                     }

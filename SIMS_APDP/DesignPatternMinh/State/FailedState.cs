@@ -2,7 +2,6 @@
 
 public class FailedState : ICourseState
 {
-    public string GetStatus() => "Trượt - Có thể học lại";
+    public string GetStatus() => "fail";
     public string GetBadgeClass() => "bg-danger";
-    public bool CanRetake() => true;
 }

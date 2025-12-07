@@ -2,8 +2,8 @@
 {
     public class InProgressState : ICourseState
     {
-        public string GetStatus() => "Đang học";
+        public string GetStatus() => "Studying";
         public string GetBadgeClass() => "bg-warning text-dark";
-        public bool CanRetake() => false;
+
     }
 }

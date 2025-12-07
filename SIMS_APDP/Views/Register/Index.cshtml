@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Đăng ký tài khoản sinh viên";
+    ViewData["Title"] = "Student Account Registration";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 @model SIMS_APDP.Models.User
@@ -9,12 +9,19 @@
         <div class="col-12 col-md-10 col-lg-8">
             <div class="card shadow-lg border-0" style="border-radius:20px;background:rgba(255,255,255,0.95);">
                 <div class="card-body p-5">
+
+                    <!-- Header -->
                     <div class="text-center mb-5">
                         <h1 class="text-success fw-bold" style="font-size:3.5rem;">SIMS</h1>
-                        <p class="text-muted fs-5">Register Account <strong class="text-success">Student</strong></p>
-                        <div class="badge bg-success text-white fs-6">Free • For Students Only</div>
+                        <p class="text-muted fs-5">
+                            Register Account <strong class="text-success">Student</strong>
+                        </p>
+                        <div class="badge bg-success text-white fs-6">
+                            Free • For Students Only
+                        </div>
                     </div>
 
+                    <!-- Success -->
                     @if (TempData["Success"] != null)
                     {
                         <div class="alert alert-success alert-dismissible fade show mb-4">
@@ -23,15 +30,17 @@
                         </div>
                     }
 
+                    <!-- Errors -->
                     @if (!ViewData.ModelState.IsValid && ViewData.ModelState.ErrorCount > 0)
                     {
                         <div class="alert alert-danger alert-dismissible fade show">
                             <i class="fas fa-exclamation-triangle me-2"></i>
-                            Please fix the errors below and try again.
+                            Please correct the errors below and try again.
                             <button type="button" class="btn-close" data-mdb-dismiss="alert"></button>
                         </div>
                     }
 
+                    <!-- Form -->
                     <form asp-action="Index" asp-controller="Register" method="post">
                         @Html.AntiForgeryToken()
 
@@ -107,7 +116,8 @@
                             </div>
 
                             <div class="col-12 text-center mt-4">
-                                <button type="submit" class="btn btn-success text-white btn-lg px-5"
+                                <button type="submit"
+                                        class="btn btn-success text-white btn-lg px-5"
                                         style="border-radius:50px;font-weight:600;">
                                     Register as Student
                                 </button>
@@ -116,11 +126,15 @@
                             <div class="col-12 text-center mt-3">
                                 <p class="text-muted">
                                     Already have an account?
-                                    <a href="@Url.Action("Index", "Login")" class="text-success fw-bold text-decoration-underline">Login Now</a>
+                                    <a href="@Url.Action("Index", "Login")"
+                                       class="text-success fw-bold text-decoration-underline">
+                                        Login Now
+                                    </a>
                                 </p>
                             </div>
                         </div>
                     </form>
+
                 </div>
             </div>
         </div>
@@ -130,6 +144,7 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
-        document.querySelectorAll('.form-outline').forEach(f => new mdb.Input(f).init());
+        document.querySelectorAll('.form-outline')
+            .forEach(f => new mdb.Input(f).init());
     </script>
 }
