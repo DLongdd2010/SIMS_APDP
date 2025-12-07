@@ -1,0 +1,57 @@
+﻿@{
+    ViewData["Title"] = "Home_Student";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-5">
+    <!-- Header chào mừng -->
+    <div class="text-center mb-5">
+        <h1 class="display-4 text-success fw-bold">Welcome Student @User.Identity.Name</h1>
+        <p class="lead">Wishing you excellent academic success!</p>
+    </div>
+
+    <!-- Các card chức năng -->
+    <div class="row g-4 justify-content-center">
+        <!-- Card 1: Thời khóa biểu -->
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card h-100 text-white bg-primary shadow-lg border-0">
+                <div class="card-body text-center d-flex flex-column justify-content-between">
+                    <div>
+                        <i class="fas fa-calendar-alt fa-3x mb-3"></i>
+                        <h5 class="card-title fw-bold">Timetable</h5>
+                        <p class="card-text">View detailed weekly schedule</p>
+                    </div>
+                    <a href="/Student/Timetable" class="btn btn-light mt-3">View Now</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 2: Điểm số -->
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card h-100 text-white bg-success shadow-lg border-0">
+                <div class="card-body text-center d-flex flex-column justify-content-between">
+                    <div>
+                        <i class="fas fa-clipboard-list fa-3x mb-3"></i>
+                        <h5 class="card-title fw-bold">Grades</h5>
+                        <p class="card-text">Academic results for all subjects</p>
+                    </div>
+                    <a href="/Student/Grades" class="btn btn-light mt-3">View Grades</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 3: Phản hồi giảng viên -->
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card h-100 text-white bg-warning shadow-lg border-0">
+                <div class="card-body text-center d-flex flex-column justify-content-between">
+                    <div>
+                        <i class="fas fa-comment-dots fa-3x mb-3"></i>
+                        <h5 class="card-title fw-bold">Instructor Feedback</h5>
+                        <p class="card-text">Send feedback to instructors</p>
+                    </div>
+                    <a href="/Student/Feedback" class="btn btn-light mt-3">Send Feedback</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

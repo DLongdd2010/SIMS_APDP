@@ -1,0 +1,144 @@
+@model SIMS_APDP.Models.User
+@{
+    ViewData["Title"] = "My Profile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="card shadow-xl border-0 overflow-hidden">
+                <!-- Epic Header -->
+                <div class="card-header text-white text-center py-6 position-relative overflow-hidden"
+                     style="background: linear-gradient(135deg, #00b894, #00cec9);">
+                    <div class="avatar-big mx-auto mb-4">
+                        <i class="fas fa-user fa-4x"></i>
+                    </div>
+                    <h2 class="mb-1 fw-bold display-6">@Model.FullName</h2>
+                    <p class="mb-0 opacity-90 fs-5">@Model.Username • @Model.Role?.RoleName</p>
+                </div>
+
+                <div class="card-body p-5 p-lg-6">
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm">
+                            <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <h4 class="fw-bold text-primary mb-5">
+                        <i class="fas fa-id-badge me-3"></i>Account Details
+                    </h4>
+
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="info-card p-4 bg-light rounded-3 hover-lift">
+                                <small class="text-muted text-uppercase fw-bold">Full Name</small>
+                                <p class="fs-5 mb-0 fw-medium">@Model.FullName</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="info-card p-4 bg-light rounded-3 hover-lift">
+                                <small class="text-muted text-uppercase fw-bold">Username</small>
+                                <p class="fs-5 mb-0 fw-medium">@Model.Username</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="info-card p-4 bg-light rounded-3 hover-lift">
+                                <small class="text-muted text-uppercase fw-bold">Email Address</small>
+                                <p class="fs-5 mb-0 fw-medium">@Model.Email</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="info-card p-4 bg-light rounded-3 hover-lift">
+                                <small class="text-muted text-uppercase fw-bold">Phone Number</small>
+                                <p class="fs-5 mb-0 fw-medium">@(string.IsNullOrEmpty(Model.PhoneNumber) ? "Not provided" : Model.PhoneNumber)</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="info-card p-4 bg-light rounded-3 hover-lift">
+                                <small class="text-muted text-uppercase fw-bold">Gender</small>
+                                <p class="fs-5 mb-0 fw-medium">
+                                    @(Model.Gender == "M" ? "Male" :
+                                                                        Model.Gender == "F" ? "Female" :
+                                                                        "Not specified")
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="info-card p-4 bg-light rounded-3 hover-lift">
+                                <small class="text-muted text-uppercase fw-bold">Date of Birth</small>
+                                <p class="fs-5 mb-0 fw-medium">@Model.DateOfBirth.ToString("MMMM dd, yyyy")</p>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="info-card p-4 bg-light rounded-3 hover-lift">
+                                <small class="text-muted text-uppercase fw-bold">Address</small>
+                                <p class="fs-5 mb-0 fw-medium">@(string.IsNullOrEmpty(Model.Address) ? "Not provided" : Model.Address)</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="info-card p-4 bg-light rounded-3 hover-lift">
+                                <small class="text-muted text-uppercase fw-bold">User ID</small>
+                                <p class="fs-5 mb-0 fw-medium text-primary">#@Model.UserId</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="info-card p-4 bg-light rounded-3 hover-lift text-center text-md-start">
+                                <small class="text-muted text-uppercase fw-bold">Role</small>
+                                <div class="mt-2">
+                                    <span class="badge fs-6 px-4 py-2 fw-bold text-white rounded-pill shadow-sm"
+                                          style="background: linear-gradient(135deg, #00b894, #00cec9);">
+                                        @Model.Role?.RoleName
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-6">
+                        <a href="/Account/ChangePassword" class="btn btn-warning btn-lg px-5 shadow-lg">
+                            <i class="fas fa-key me-2"></i>Change Password
+                        </a>
+                        <a href="@Url.Action("Index", "Home")" class="btn btn-outline-dark btn-lg px-5 ms-3">
+                            <i class="fas fa-arrow-left me-2"></i>Back
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .hover-lift {
+        transition: all 0.3s ease;
+    }
+
+        .hover-lift:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0,184,148,0.2) !important;
+        }
+
+    .avatar-big {
+        width: 130px;
+        height: 130px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.25);
+        backdrop-filter: blur(12px);
+        border: 5px solid white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    }
+</style>

@@ -1,0 +1,30 @@
+﻿@{
+    ViewData["Title"] = "Trang chủ";
+}
+
+<div class="hero min-h-screen bg-base-200">
+    <div class="hero-content text-center">
+        <div class="max-w-md">
+            <h1 class="text-5xl font-bold text-primary">Welcome to SIMS APDP</h1>
+            <p class="py-6 text-lg">The most modern student info, attendance, timetable, and feedback management system!</p>
+
+            @if (!User.Identity.IsAuthenticated)
+            {
+                <div class="space-x-4">
+                    <a href="/Register" class="btn btn-primary btn-lg">Register Now</a>
+                    <a href="/Login" class="btn btn-outline btn-lg">Login</a>
+                </div>
+            }
+            else
+            {
+                <div class="stats shadow">
+                    <div class="stat">
+                        <div class="stat-title">Hello</div>
+                        <div class="stat-value text-primary">@User.Identity.Name</div>
+                        <div class="stat-desc">Have a nice day!</div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
