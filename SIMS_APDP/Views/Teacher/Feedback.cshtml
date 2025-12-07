@@ -1,0 +1,37 @@
+﻿@{
+    ViewData["Title"] = "Phản hồi từ sinh viên";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model List<SIMS_APDP.Models.Feedback>
+
+<div class="container py-5">
+    <h2 class="text-center mb-5 text-warning fw-bold">Phản Hồi Từ Sinh Viên</h2>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-secondary text-center">
+            <i class="fas fa-comment-slash fa-3x mb-3"></i>
+            <p>Chưa có phản hồi nào từ sinh viên.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var f in Model)
+            {
+                <div class="col-lg-6 col-xl-4">
+                    <div class="card h-100 shadow-sm border-0">
+                        <div class="card-header bg-light d-flex justify-content-between">
+                            <strong>@f.User?.FullName</strong>
+                            <small class="text-muted">@f.CreatedAt.ToString("dd/MM/yyyy HH:mm")</small>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-2"><strong>Môn:</strong> @(f.Course?.CourseName ?? "Không xác định")</p>
+                            <p class="mb-0 text-dark">@f.Message</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

@@ -1,0 +1,50 @@
+﻿@{
+    ViewData["Title"] = "Teacher Grades";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model SIMS_APDP.Models.Course
+@{
+    var grades = ViewBag.Grades as List<SIMS_APDP.Models.GradesProfile>;
+}
+
+<div class="container py-5">
+    <h2 class="text-center mb-4">Nhập Điểm Cho Môn: @Model.CourseName</h2>
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Sinh Viên</th>
+                <th>Học Kỳ</th>
+                <th>Điểm</th>
+                <th>Xếp Hạng</th>
+                <th>Hành Động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var sc in Model.StudentCourses)
+            {
+                var gradeProfile = ViewBag.Grades as List<SIMS_APDP.Models.GradesProfile>;
+                var gp = gradeProfile?.FirstOrDefault(g =>
+                g.UserId == sc.UserId &&
+                g.CourseId == sc.CourseId &&
+                g.Semester == sc.Semester);
+
+                <tr>
+                    <td>@sc.User?.FullName (@sc.User?.Username)</td>
+                    <td>@sc.Semester</td>
+                    <td>
+                        <form asp-action="UpdateGrade" method="post" class="d-inline">
+                            <input type="hidden" name="userId" value="@sc.UserId" />
+                            <input type="hidden" name="courseId" value="@sc.CourseId" />
+                            <input type="hidden" name="semester" value="@sc.Semester" />
+                            <input type="number" name="grade" step="0.1" min="0" max="10"
+                                   class="form-control form-control-sm d-inline w-75"
+                                   value="@(gp?.Grade)" />
+                            <button type="submit" class="btn btn-success btn-sm">Lưu</button>
+                        </form>
+                    </td>
+                    <td>@(gp?.Ranking ?? "Chưa xếp loại")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
