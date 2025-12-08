@@ -57,19 +57,19 @@ namespace SIMS_APDP.Controllers
                 string.IsNullOrWhiteSpace(newPassword) ||
                 string.IsNullOrWhiteSpace(confirmPassword))
             {
-                TempData["Error"] = "Vui lòng điền đầy đủ các trường.";
+                TempData["Error"] = "Please fill in all fields.";
                 return View("~/Views/Account/ChangePassword.cshtml");
             }
 
             if (newPassword != confirmPassword)
             {
-                TempData["Error"] = "Mật khẩu mới và xác nhận không khớp!";
+                TempData["Error"] = "New password and confirmation do not match!";
                 return View("~/Views/Account/ChangePassword.cshtml");
             }
 
             if (newPassword.Length < 6)
             {
-                TempData["Error"] = "Mật khẩu mới phải có ít nhất 6 ký tự!";
+                TempData["Error"] = "New password must be at least 6 characters!";
                 return View("~/Views/Account/ChangePassword.cshtml");
             }
 
@@ -77,7 +77,7 @@ namespace SIMS_APDP.Controllers
             var userIdClaim = User.FindFirst("UserId")?.Value;
             if (!int.TryParse(userIdClaim, out int userId))
             {
-                TempData["Error"] = "Không xác định được tài khoản!";
+                TempData["Error"] = "Account not identified!";
                 return RedirectToAction("Logout", "Login");
             }
 
@@ -85,7 +85,7 @@ namespace SIMS_APDP.Controllers
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
             if (user == null)
             {
-                TempData["Error"] = "Tài khoản không tồn tại!";
+                TempData["Error"] = "Account does not exist!";
                 return RedirectToAction("Logout", "Login");
             }
 
@@ -94,7 +94,7 @@ namespace SIMS_APDP.Controllers
 
             if (user.Password != currentHashed)
             {
-                TempData["Error"] = "Mật khẩu hiện tại không đúng!";
+                TempData["Error"] = "Current password is incorrect!";
                 return View("~/Views/Account/ChangePassword.cshtml");
             }
 
@@ -106,7 +106,7 @@ namespace SIMS_APDP.Controllers
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Đổi mật khẩu thành công! Vui lòng đăng nhập lại.";
+            TempData["Success"] = "Password changed successfully! Please log in again.";
 
             // TỐT NHẤT: Đăng xuất luôn để tránh dùng session cũ
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
