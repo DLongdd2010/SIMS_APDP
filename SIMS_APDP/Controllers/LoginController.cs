@@ -33,7 +33,7 @@ namespace SIMS_APDP.Controllers
         {
             if (string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Password))
             {
-                TempData["Error"] = "Vui lòng nhập email và mật khẩu.";
+                TempData["Error"] = "Please enter email and password.";
                 return RedirectToAction("Index");
             }
 
@@ -46,7 +46,7 @@ namespace SIMS_APDP.Controllers
 
             if (user == null || user.Password != hashed)
             {
-                TempData["Error"] = "Email hoặc mật khẩu không đúng.";
+                TempData["Error"] = "Email or password is incorrect.";
                 return RedirectToAction("Index");
             }
 

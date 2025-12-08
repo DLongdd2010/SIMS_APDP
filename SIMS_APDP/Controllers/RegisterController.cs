@@ -48,14 +48,14 @@ namespace SIMS_APDP.Controllers
             // Check if username already exists
             if (_userService.UsernameExists(model.Username))
             {
-                ModelState.AddModelError("Username", "Tên đăng nhập đã tồn tại!");
+                ModelState.AddModelError("Username", "Username already exists!");
                 return View(model);
             }
 
             // Check if email already exists
             if (_userService.EmailExists(model.Email))
             {
-                ModelState.AddModelError("Email", "Email này đã được đăng ký!");
+                ModelState.AddModelError("Email", "This email is already registered!");
                 return View(model);
             }
 
@@ -69,7 +69,7 @@ namespace SIMS_APDP.Controllers
             _context.Users.Add(model);
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Đăng ký thành công! Bạn đã là Sinh viên SIMS.";
+            TempData["Success"] = "Registration successful! You are now a SIMS Student.";
 
             return RedirectToAction("Index", "Login");
         }
